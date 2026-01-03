@@ -1,0 +1,178 @@
+import { openDB, DBSchema, IDBPDatabase } from 'idb';
+
+// Types for snow profile data
+export interface SnowSample {
+  id: number;
+  height: number; // Height of this layer in cm
+  temperature: number | null; // Temperature in °C (optional)
+  resistance: number; // Resistance value (I=120, K=100, P=50, 1F=25, 4F=10, F=2)
+  grainType: number; // Grain type 1-9
+  diameter: number | null; // Diameter in mm (optional)
+  humidity: string | null; // D, M, W, V, S (optional)
+}
+
+export interface SnowProfile {
+  id?: number;
+  name: string;
+  observer: string;
+  latitude: number | null;
+  longitude: number | null;
+  altitude: number | null;
+  timestamp: string; // ISO 8601 UTC format
+  samples: SnowSample[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface NivoDBSchema extends DBSchema {
+  profiles: {
+    key: number;
+    value: SnowProfile;
+    indexes: { 'by-date': string; 'by-name': string };
+  };
+}
+
+let dbInstance: IDBPDatabase<NivoDBSchema> | null = null;
+
+export async function getDB(): Promise<IDBPDatabase<NivoDBSchema>> {
+  if (dbInstance) return dbInstance;
+
+  dbInstance = await openDB<NivoDBSchema>('nivo-profiles-db', 1, {
+    upgrade(db) {
+      const profileStore = db.createObjectStore('profiles', {
+        keyPath: 'id',
+        autoIncrement: true,
+      });
+      profileStore.createIndex('by-date', 'createdAt');
+      profileStore.createIndex('by-name', 'name');
+    },
+  });
+
+  return dbInstance;
+}
+
+// CRUD operations
+export async function saveProfile(profile: Omit<SnowProfile, 'id' | 'createdAt' | 'updatedAt'>): Promise<number> {
+  const db = await getDB();
+  const now = new Date().toISOString();
+  const fullProfile: SnowProfile = {
+    ...profile,
+    createdAt: now,
+    updatedAt: now,
+  };
+  return db.add('profiles', fullProfile);
+}
+
+export async function updateProfile(id: number, profile: Partial<SnowProfile>): Promise<void> {
+  const db = await getDB();
+  const existing = await db.get('profiles', id);
+  if (!existing) throw new Error('Profile not found');
+  
+  const updated: SnowProfile = {
+    ...existing,
+    ...profile,
+    id,
+    updatedAt: new Date().toISOString(),
+  };
+  await db.put('profiles', updated);
+}
+
+export async function getProfile(id: number): Promise<SnowProfile | undefined> {
+  const db = await getDB();
+  return db.get('profiles', id);
+}
+
+export async function getAllProfiles(): Promise<SnowProfile[]> {
+  const db = await getDB();
+  return db.getAllFromIndex('profiles', 'by-date');
+}
+
+export async function deleteProfile(id: number): Promise<void> {
+  const db = await getDB();
+  await db.delete('profiles', id);
+}
+
+// Resistance quick values per AEMET standard
+export const RESISTANCE_VALUES = [
+  { label: 'I', value: 120, description: 'Hielo (Ice)' },
+  { label: 'K', value: 100, description: 'Cuchillo (Knife)' },
+  { label: 'P', value: 50, description: 'Lápiz (Pencil)' },
+  { label: '1F', value: 25, description: '1 Dedo (1 Finger)' },
+  { label: '4F', value: 10, description: '4 Dedos (4 Fingers)' },
+  { label: 'F', value: 2, description: 'Puño (Fist)' },
+] as const;
+
+// Grain types per AEMET classification (1-9)
+export const GRAIN_TYPES = [
+  { value: 1, label: 'PP', name: 'Nieve reciente (Precipitation Particles)' },
+  { value: 2, label: 'DF', name: 'Partículas fragmentadas (Decomposing Fragments)' },
+  { value: 3, label: 'RG', name: 'Grano redondo (Rounded Grains)' },
+  { value: 4, label: 'FC', name: 'Cristales facetados (Faceted Crystals)' },
+  { value: 5, label: 'DH', name: 'Escarcha de profundidad (Depth Hoar)' },
+  { value: 6, label: 'SH', name: 'Escarcha superficial (Surface Hoar)' },
+  { value: 7, label: 'MF', name: 'Granos de fusión (Melt Forms)' },
+  { value: 8, label: 'IF', name: 'Costras de hielo (Ice Formations)' },
+  { value: 9, label: 'MM', name: 'Formas mecánicas (Machine Made)' },
+] as const;
+
+// Humidity values per AEMET standard
+export const HUMIDITY_VALUES = [
+  { value: 'D', label: 'D - Seca', description: 'Temperatura <0°C, nieve polvo' },
+  { value: 'M', label: 'M - Húmeda', description: 'T≈0°C, se puede hacer bola' },
+  { value: 'W', label: 'W - Mojada', description: 'Agua visible al apretar' },
+  { value: 'V', label: 'V - Muy mojada', description: 'Agua escurre al apretar' },
+  { value: 'S', label: 'S - Empapada', description: 'Saturada de agua' },
+] as const;
+
+// Export profile to CSV
+export function exportToCSV(profile: SnowProfile): string {
+  const header = [
+    'Perfil Estratigráfico de Nieve - Estándar AEMET',
+    '',
+    `Nombre del Perfil,${profile.name}`,
+    `Observador,${profile.observer}`,
+    `Latitud,${profile.latitude ?? 'N/A'}`,
+    `Longitud,${profile.longitude ?? 'N/A'}`,
+    `Altitud (m),${profile.altitude ?? 'N/A'}`,
+    `Fecha/Hora UTC,${profile.timestamp}`,
+    '',
+    'Muestra,Altura (cm),Altura Acumulada (cm),Temperatura (°C),Resistencia,Tipo Grano,Diámetro (mm),Humedad',
+  ].join('\n');
+
+  let accumulatedHeight = 0;
+  const rows = profile.samples.map((sample, index) => {
+    accumulatedHeight += sample.height;
+    const grainLabel = GRAIN_TYPES.find(g => g.value === sample.grainType)?.label ?? sample.grainType;
+    const resistanceLabel = RESISTANCE_VALUES.find(r => r.value === sample.resistance)?.label ?? sample.resistance;
+    
+    return [
+      index + 1,
+      sample.height,
+      accumulatedHeight,
+      sample.temperature ?? '',
+      `${resistanceLabel} (${sample.resistance})`,
+      `${grainLabel} (${sample.grainType})`,
+      sample.diameter ?? '',
+      sample.humidity ?? '',
+    ].join(',');
+  }).join('\n');
+
+  return `${header}\n${rows}`;
+}
+
+// Download CSV file
+export function downloadCSV(profile: SnowProfile): void {
+  const csv = exportToCSV(profile);
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  
+  const filename = `perfil_nivo_${profile.name.replace(/\s+/g, '_')}_${new Date(profile.timestamp).toISOString().split('T')[0]}.csv`;
+  
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}

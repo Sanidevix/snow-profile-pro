@@ -2,87 +2,134 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* NivoApp Design System - High contrast for outdoor/snow conditions */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Snow/Alpine theme - High contrast for bright conditions */
+    --background: 210 25% 97%;
+    --foreground: 220 20% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 220 20% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 220 20% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Deep blue primary for snow contrast */
+    --primary: 220 75% 35%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Warm amber secondary for visibility */
+    --secondary: 35 95% 55%;
+    --secondary-foreground: 220 20% 15%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted tones */
+    --muted: 210 20% 90%;
+    --muted-foreground: 215 15% 40%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent - safety orange */
+    --accent: 25 100% 50%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Alert/danger colors */
+    --destructive: 0 80% 50%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Success - alpine green */
+    --success: 145 65% 35%;
+    --success-foreground: 0 0% 100%;
 
-    --radius: 0.5rem;
+    /* Warning - amber */
+    --warning: 40 95% 50%;
+    --warning-foreground: 220 20% 15%;
 
+    /* Info - sky blue */
+    --info: 200 85% 50%;
+    --info-foreground: 0 0% 100%;
+
+    --border: 214.3 31.8% 75%;
+    --input: 214.3 31.8% 85%;
+    --ring: 220 75% 35%;
+
+    --radius: 0.75rem;
+
+    /* Chart specific colors */
+    --chart-resistance: 220 75% 45%;
+    --chart-temperature: 0 75% 55%;
+    --chart-grid: 210 20% 75%;
+    --chart-axis: 220 20% 30%;
+
+    /* Layer type colors */
+    --grain-1: 200 80% 60%;
+    --grain-2: 180 70% 50%;
+    --grain-3: 150 60% 50%;
+    --grain-4: 120 50% 50%;
+    --grain-5: 80 60% 50%;
+    --grain-6: 50 70% 50%;
+    --grain-7: 30 80% 55%;
+    --grain-8: 0 70% 55%;
+    --grain-9: 280 60% 55%;
+
+    /* Sidebar variables */
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Gradients */
+    --gradient-snow: linear-gradient(180deg, hsl(210 25% 97%) 0%, hsl(200 30% 92%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(220 75% 35%) 0%, hsl(220 85% 45%) 100%);
+    --gradient-header: linear-gradient(180deg, hsl(220 75% 35%) 0%, hsl(220 65% 30%) 100%);
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 220 20% 10%;
+    --foreground: 210 25% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 220 20% 14%;
+    --card-foreground: 210 25% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 220 20% 14%;
+    --popover-foreground: 210 25% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 210 85% 55%;
+    --primary-foreground: 220 20% 10%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 35 80% 50%;
+    --secondary-foreground: 220 20% 10%;
 
-    --muted: 217.2 32.6% 17.5%;
+    --muted: 217.2 32.6% 20%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 25 90% 55%;
+    --accent-foreground: 220 20% 10%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 70% 45%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --success: 145 55% 40%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 40 85% 45%;
+    --warning-foreground: 220 20% 10%;
+
+    --info: 200 75% 45%;
+    --info-foreground: 220 20% 10%;
+
+    --border: 217.2 32.6% 25%;
+    --input: 217.2 32.6% 25%;
+    --ring: 210 85% 55%;
+
+    --chart-resistance: 210 75% 55%;
+    --chart-temperature: 0 65% 60%;
+    --chart-grid: 220 20% 30%;
+    --chart-axis: 210 25% 75%;
+
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -100,6 +147,224 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Large touch targets for glove use */
+  button, 
+  input, 
+  select, 
+  textarea {
+    @apply min-h-[48px] text-base;
+  }
+
+  /* High contrast focus states */
+  :focus-visible {
+    @apply outline-none ring-4 ring-primary ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer components {
+  .nivo-container {
+    @apply max-w-2xl mx-auto px-4 py-6;
+  }
+
+  .nivo-card {
+    @apply bg-card rounded-xl shadow-lg border-2 border-border p-6;
+  }
+
+  .nivo-section-title {
+    @apply text-lg font-bold text-foreground uppercase tracking-wide mb-4 pb-2 border-b-2 border-primary;
+  }
+
+  .nivo-field-label {
+    @apply text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 block;
+  }
+
+  .nivo-input {
+    @apply w-full px-4 py-3 rounded-lg border-2 border-input bg-background text-foreground text-lg font-medium;
+    @apply focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all;
+  }
+
+  .nivo-select {
+    @apply w-full px-4 py-3 rounded-lg border-2 border-input bg-background text-foreground text-lg font-medium;
+    @apply focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all appearance-none cursor-pointer;
+  }
+
+  .nivo-btn {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold text-lg;
+    @apply transition-all duration-200 active:scale-95;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
+  }
+
+  .nivo-btn-primary {
+    @apply nivo-btn bg-primary text-primary-foreground;
+    @apply hover:brightness-110 shadow-lg;
+  }
+
+  .nivo-btn-secondary {
+    @apply nivo-btn bg-secondary text-secondary-foreground;
+    @apply hover:brightness-110 shadow-md;
+  }
+
+  .nivo-btn-success {
+    @apply nivo-btn bg-success text-success-foreground;
+    @apply hover:brightness-110 shadow-lg;
+  }
+
+  .nivo-btn-outline {
+    @apply nivo-btn border-2 border-primary text-primary bg-transparent;
+    @apply hover:bg-primary hover:text-primary-foreground;
+  }
+
+  .nivo-btn-danger {
+    @apply nivo-btn bg-destructive text-destructive-foreground;
+    @apply hover:brightness-110 shadow-lg;
+  }
+
+  .nivo-quick-btn {
+    @apply px-3 py-2 rounded-lg font-bold text-sm border-2;
+    @apply transition-all active:scale-95;
+    @apply bg-muted text-foreground border-border;
+    @apply hover:bg-primary hover:text-primary-foreground hover:border-primary;
+  }
+
+  .nivo-quick-btn.active {
+    @apply bg-primary text-primary-foreground border-primary;
+  }
+
+  .nivo-data-display {
+    @apply font-mono text-xl font-bold tracking-tight;
+  }
+
+  .nivo-gps-badge {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold;
+    @apply bg-success/15 text-success border border-success/30;
+  }
+
+  .nivo-gps-badge.waiting {
+    @apply bg-warning/15 text-warning border border-warning/30 animate-pulse;
+  }
+
+  .nivo-gps-badge.error {
+    @apply bg-destructive/15 text-destructive border border-destructive/30;
+  }
+
+  /* Chart specific styles */
+  .nivo-chart-container {
+    @apply bg-card rounded-xl border-2 border-border p-4 overflow-hidden;
+  }
+
+  .nivo-chart-axis-label {
+    @apply text-xs font-bold fill-muted-foreground uppercase;
+  }
+
+  .nivo-chart-value {
+    @apply text-xs font-mono fill-foreground;
+  }
+
+  /* Resistance bar gradient */
+  .resistance-bar {
+    fill: hsl(var(--chart-resistance));
+  }
+
+  /* Temperature line */
+  .temperature-line {
+    stroke: hsl(var(--chart-temperature));
+    fill: none;
+    stroke-width: 3;
+  }
+
+  .temperature-point {
+    fill: hsl(var(--chart-temperature));
+  }
+
+  /* Sample table */
+  .nivo-table {
+    @apply w-full border-collapse;
+  }
+
+  .nivo-table th {
+    @apply bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider px-3 py-3 text-left;
+  }
+
+  .nivo-table td {
+    @apply px-3 py-3 text-sm font-medium border-b border-border;
+  }
+
+  .nivo-table tr:nth-child(even) {
+    @apply bg-muted/50;
+  }
+
+  .nivo-table tr:hover {
+    @apply bg-muted;
+  }
+}
+
+@layer utilities {
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  .text-shadow-md {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .glass-effect {
+    @apply backdrop-blur-md bg-background/90;
+  }
+
+  /* Hide scrollbar but allow scrolling */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* PWA install prompt styling */
+.pwa-install-banner {
+  @apply fixed bottom-0 left-0 right-0 p-4 bg-primary text-primary-foreground;
+  @apply flex items-center justify-between gap-4 shadow-lg z-50;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Chart animations */
+@keyframes drawBar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.animate-draw-bar {
+  animation: drawBar 0.5s ease-out forwards;
+  transform-origin: left;
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .nivo-chart-container {
+    border: 1px solid #000;
+    page-break-inside: avoid;
   }
 }
