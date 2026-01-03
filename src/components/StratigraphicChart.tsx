@@ -64,12 +64,13 @@ export function StratigraphicChart({ samples, maxHeight }: StratigraphicChartPro
 
   // Scale functions
   const yScale = (h: number) => marginTop + innerHeight * (1 - h / chartHeight);
-  const xScaleResistance = (r: number) => marginLeft + innerWidth * (r / CHART_CONFIG.resistanceMax);
+  // Resistance scale: 120 (left) to 0 (right) - decreasing
+  const xScaleResistance = (r: number) => marginLeft + innerWidth * (1 - r / CHART_CONFIG.resistanceMax);
   const xScaleTemperature = (t: number) => marginLeft + innerWidth * ((t - CHART_CONFIG.temperatureMin) / (CHART_CONFIG.temperatureMax - CHART_CONFIG.temperatureMin));
 
   // Generate grid lines
   const heightGridLines = Array.from({ length: Math.ceil(chartHeight / 20) + 1 }, (_, i) => i * 20);
-  const resistanceGridLines = [0, 20, 40, 60, 80, 100, 120];
+  const resistanceGridLines = [120, 100, 80, 60, 40, 20, 0];
   const temperatureGridLines = [-24, -20, -16, -12, -8, -4, 0];
 
   // Temperature line path
@@ -244,16 +245,19 @@ export function StratigraphicChart({ samples, maxHeight }: StratigraphicChartPro
         ))}
 
         {/* Resistance bars (horizontal histogram stacked from base) */}
+        {/* Bars grow from right (0) towards left (120) */}
         {processedSamples.map((sample, index) => {
           const barWidth = (sample.resistance / CHART_CONFIG.resistanceMax) * innerWidth;
           const barY = yScale(sample.topHeight);
           const barHeight = yScale(sample.baseHeight) - yScale(sample.topHeight);
           const grainLabel = GRAIN_TYPES.find(g => g.value === sample.grainType)?.label ?? '';
+          // Bar starts from the right edge (where resistance = 0) and extends left
+          const barX = marginLeft + innerWidth - barWidth;
           
           return (
             <g key={`sample-${index}`}>
               <rect
-                x={marginLeft}
+                x={barX}
                 y={barY}
                 width={barWidth}
                 height={barHeight}
@@ -267,7 +271,7 @@ export function StratigraphicChart({ samples, maxHeight }: StratigraphicChartPro
               {/* Grain type label */}
               {barHeight > 15 && (
                 <text
-                  x={marginLeft + 5}
+                  x={barX + 5}
                   y={barY + barHeight / 2 + 4}
                   className="text-[10px] font-bold fill-foreground"
                 >
