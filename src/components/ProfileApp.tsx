@@ -79,6 +79,20 @@ export function ProfileApp() {
     });
   }, []);
 
+  const handleReorderSample = useCallback((fromIndex: number, toIndex: number) => {
+    setSamples(prev => {
+      const newSamples = [...prev];
+      const [movedSample] = newSamples.splice(fromIndex, 1);
+      newSamples.splice(toIndex, 0, movedSample);
+      // Reassign sequential IDs
+      return newSamples.map((s, i) => ({ ...s, id: i + 1 }));
+    });
+    toast({
+      title: 'Orden actualizado',
+      description: `Muestra movida a posición ${toIndex + 1}`,
+    });
+  }, []);
+
   const handleSaveProfile = useCallback(async () => {
     try {
       const profile: Omit<SnowProfile, 'id' | 'createdAt' | 'updatedAt'> = {
@@ -208,7 +222,7 @@ export function ProfileApp() {
               </button>
             </div>
             {showChart && <StratigraphicChart samples={samples} />}
-            <SampleTable samples={samples} onDeleteSample={handleDeleteSample} />
+            <SampleTable samples={samples} onDeleteSample={handleDeleteSample} onReorderSample={handleReorderSample} />
           </div>
         )}
 
