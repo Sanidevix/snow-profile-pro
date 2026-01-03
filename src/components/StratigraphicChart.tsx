@@ -10,9 +10,9 @@ const CHART_CONFIG = {
   width: 600,
   height: 500,
   marginTop: 50,
-  marginRight: 30,
+  marginRight: 60, // Increased for height labels on right
   marginBottom: 50,
-  marginLeft: 60,
+  marginLeft: 30,  // Reduced since no labels on left
   resistanceMax: 120,
   temperatureMin: -24,
   temperatureMax: 0,
@@ -135,7 +135,7 @@ export function StratigraphicChart({ samples, maxHeight }: StratigraphicChartPro
           Resistencia (R: 0-120)
         </text>
         <text
-          x={15}
+          x={width - 15}
           y={height / 2}
           textAnchor="middle"
           transform={`rotate(-90, 15, ${height / 2})`}
@@ -204,11 +204,11 @@ export function StratigraphicChart({ samples, maxHeight }: StratigraphicChartPro
           </g>
         ))}
 
-        {/* Height axis (left) */}
+        {/* Height axis (right) */}
         <line
-          x1={marginLeft}
+          x1={marginLeft + innerWidth}
           y1={marginTop}
-          x2={marginLeft}
+          x2={marginLeft + innerWidth}
           y2={marginTop + innerHeight}
           stroke="hsl(var(--chart-axis))"
           strokeWidth="2"
@@ -216,17 +216,17 @@ export function StratigraphicChart({ samples, maxHeight }: StratigraphicChartPro
         {heightGridLines.filter(h => h <= chartHeight).map(h => (
           <g key={`height-${h}`}>
             <text
-              x={marginLeft - 10}
+              x={marginLeft + innerWidth + 10}
               y={yScale(h) + 4}
-              textAnchor="end"
+              textAnchor="start"
               className="text-[10px] fill-foreground"
             >
               {h}
             </text>
             <line
-              x1={marginLeft - 5}
+              x1={marginLeft + innerWidth}
               y1={yScale(h)}
-              x2={marginLeft}
+              x2={marginLeft + innerWidth + 5}
               y2={yScale(h)}
               stroke="hsl(var(--chart-axis))"
               strokeWidth="1"
