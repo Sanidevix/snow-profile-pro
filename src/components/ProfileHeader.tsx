@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Mountain, Clock, Loader2 } from 'lucide-react';
+import { MapPin, Mountain, Clock, Loader2, FileText } from 'lucide-react';
 import { useGeolocation, formatCoordinate, formatAltitude } from '@/hooks/useGeolocation';
 import { useCurrentTime, formatTimeShortUTC, formatDateUTC } from '@/hooks/useCurrentTime';
 
@@ -8,6 +8,8 @@ interface ProfileHeaderProps {
   setProfileName: (name: string) => void;
   observer: string;
   setObserver: (observer: string) => void;
+  observations: string;
+  setObservations: (observations: string) => void;
   onStartProfile: () => void;
   isStarted: boolean;
   frozenData: {
@@ -23,12 +25,14 @@ export function ProfileHeader({
   setProfileName,
   observer,
   setObserver,
+  observations,
+  setObservations,
   onStartProfile,
   isStarted,
   frozenData,
 }: ProfileHeaderProps) {
   const geo = useGeolocation();
-  const { currentTime, isFrozen } = useCurrentTime(isStarted);
+  const { currentTime } = useCurrentTime(isStarted);
 
   // Use frozen data if profile is started, otherwise live data
   const displayLat = frozenData?.latitude ?? geo.latitude;
@@ -106,6 +110,22 @@ export function ProfileHeader({
             disabled={isStarted}
           />
         </div>
+      </div>
+
+      {/* Observations field */}
+      <div>
+        <label className="nivo-field-label flex items-center gap-2" htmlFor="observations">
+          <FileText className="w-4 h-4" />
+          Observaciones
+        </label>
+        <textarea
+          id="observations"
+          className="nivo-input min-h-[80px] resize-y"
+          value={observations}
+          onChange={(e) => setObservations(e.target.value)}
+          placeholder="Ej: Condiciones meteorológicas, características del terreno, incidencias..."
+          disabled={isStarted}
+        />
       </div>
 
       {/* GPS and Time display */}

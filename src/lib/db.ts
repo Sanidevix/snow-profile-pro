@@ -15,6 +15,7 @@ export interface SnowProfile {
   id?: number;
   name: string;
   observer: string;
+  observations: string; // New field for observations
   latitude: number | null;
   longitude: number | null;
   altitude: number | null;
@@ -37,14 +38,16 @@ let dbInstance: IDBPDatabase<NivoDBSchema> | null = null;
 export async function getDB(): Promise<IDBPDatabase<NivoDBSchema>> {
   if (dbInstance) return dbInstance;
 
-  dbInstance = await openDB<NivoDBSchema>('nivo-profiles-db', 1, {
-    upgrade(db) {
-      const profileStore = db.createObjectStore('profiles', {
-        keyPath: 'id',
-        autoIncrement: true,
-      });
-      profileStore.createIndex('by-date', 'createdAt');
-      profileStore.createIndex('by-name', 'name');
+  dbInstance = await openDB<NivoDBSchema>('nivo-profiles-db', 2, {
+    upgrade(db, oldVersion) {
+      if (oldVersion < 1) {
+        const profileStore = db.createObjectStore('profiles', {
+          keyPath: 'id',
+          autoIncrement: true,
+        });
+        profileStore.createIndex('by-date', 'createdAt');
+        profileStore.createIndex('by-name', 'name');
+      }
     },
   });
 
@@ -131,6 +134,7 @@ export function exportToCSV(profile: SnowProfile): string {
     '',
     `Nombre del Perfil,${profile.name}`,
     `Observador,${profile.observer}`,
+    `Observaciones,"${(profile.observations || '').replace(/"/g, '""')}"`,
     `Latitud,${profile.latitude ?? 'N/A'}`,
     `Longitud,${profile.longitude ?? 'N/A'}`,
     `Altitud (m),${profile.altitude ?? 'N/A'}`,
@@ -175,4 +179,98 @@ export function downloadCSV(profile: SnowProfile): void {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
+}
+
+// Export profile to GeoJSON
+export function exportToGeoJSON(profile: SnowProfile): string {
+  const feature = {
+    type: 'Feature',
+    geometry: {
+      type: 'Point',
+      coordinates: [
+        profile.longitude ?? 0,
+        profile.latitude ?? 0,
+        profile.altitude ?? 0
+      ]
+    },
+    properties: {
+      name: profile.name,
+      observer: profile.observer,
+      observations: profile.observations || '',
+      timestamp: profile.timestamp,
+      createdAt: profile.createdAt,
+      updatedAt: profile.updatedAt,
+      totalHeight: profile.samples.reduce((sum, s) => sum + s.height, 0),
+      sampleCount: profile.samples.length,
+      samples: profile.samples.map((sample, index) => ({
+        id: sample.id,
+        number: index + 1,
+        height: sample.height,
+        temperature: sample.temperature,
+        resistance: sample.resistance,
+        resistanceLabel: RESISTANCE_VALUES.find(r => r.value === sample.resistance)?.label ?? null,
+        grainType: sample.grainType,
+        grainTypeLabel: GRAIN_TYPES.find(g => g.value === sample.grainType)?.label ?? null,
+        diameter: sample.diameter,
+        humidity: sample.humidity
+      }))
+    }
+  };
+
+  return JSON.stringify(feature, null, 2);
+}
+
+// Download GeoJSON file
+export function downloadGeoJSON(profile: SnowProfile): void {
+  const geojson = exportToGeoJSON(profile);
+  const blob = new Blob([geojson], { type: 'application/geo+json;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  
+  const filename = `perfil_nivo_${profile.name.replace(/\s+/g, '_')}_${new Date(profile.timestamp).toISOString().split('T')[0]}.geojson`;
+  
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+// Import profile from GeoJSON
+export function parseGeoJSON(content: string): Omit<SnowProfile, 'id' | 'createdAt' | 'updatedAt'> | null {
+  try {
+    const data = JSON.parse(content);
+    
+    if (data.type !== 'Feature' || !data.geometry || !data.properties) {
+      throw new Error('Invalid GeoJSON Feature');
+    }
+
+    const coords = data.geometry.coordinates || [];
+    const props = data.properties;
+
+    const samples: SnowSample[] = (props.samples || []).map((s: any, index: number) => ({
+      id: s.id ?? index + 1,
+      height: s.height ?? 0,
+      temperature: s.temperature ?? null,
+      resistance: s.resistance ?? 50,
+      grainType: s.grainType ?? 1,
+      diameter: s.diameter ?? null,
+      humidity: s.humidity ?? null
+    }));
+
+    return {
+      name: props.name || 'Perfil Importado',
+      observer: props.observer || '',
+      observations: props.observations || '',
+      latitude: coords[1] ?? null,
+      longitude: coords[0] ?? null,
+      altitude: coords[2] ?? null,
+      timestamp: props.timestamp || new Date().toISOString(),
+      samples
+    };
+  } catch (error) {
+    console.error('Error parsing GeoJSON:', error);
+    return null;
+  }
 }

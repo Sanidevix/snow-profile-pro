@@ -1,10 +1,10 @@
-import React, { useState, useCallback } from 'react';
-import { Download, Eye, RotateCcw, Save, ChevronLeft } from 'lucide-react';
+import React, { useState, useCallback, useRef } from 'react';
+import { Download, Eye, RotateCcw, Save, ChevronLeft, Upload, MapPin } from 'lucide-react';
 import { ProfileHeader } from './ProfileHeader';
 import { SampleForm } from './SampleForm';
 import { StratigraphicChart } from './StratigraphicChart';
 import { SampleTable } from './SampleTable';
-import { SnowSample, SnowProfile, saveProfile, downloadCSV } from '@/lib/db';
+import { SnowSample, SnowProfile, saveProfile, downloadCSV, downloadGeoJSON, parseGeoJSON } from '@/lib/db';
 import { getISOTimestamp } from '@/hooks/useCurrentTime';
 import { toast } from '@/hooks/use-toast';
 
@@ -14,6 +14,7 @@ export function ProfileApp() {
   const [appState, setAppState] = useState<AppState>('header');
   const [profileName, setProfileName] = useState('');
   const [observer, setObserver] = useState('');
+  const [observations, setObservations] = useState('');
   const [samples, setSamples] = useState<SnowSample[]>([]);
   const [frozenData, setFrozenData] = useState<{
     latitude: number | null;
@@ -22,6 +23,7 @@ export function ProfileApp() {
     timestamp: string | null;
   } | null>(null);
   const [showChart, setShowChart] = useState(true);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleStartProfile = useCallback(() => {
     // Freeze GPS and time when starting
@@ -93,19 +95,35 @@ export function ProfileApp() {
     });
   }, []);
 
+  const buildProfile = useCallback((): SnowProfile => {
+    return {
+      id: 0,
+      name: profileName,
+      observer,
+      observations,
+      latitude: frozenData?.latitude ?? null,
+      longitude: frozenData?.longitude ?? null,
+      altitude: frozenData?.altitude ?? null,
+      timestamp: frozenData?.timestamp ?? getISOTimestamp(new Date()),
+      samples,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+  }, [profileName, observer, observations, frozenData, samples]);
+
   const handleSaveProfile = useCallback(async () => {
     try {
-      const profile: Omit<SnowProfile, 'id' | 'createdAt' | 'updatedAt'> = {
-        name: profileName,
-        observer,
-        latitude: frozenData?.latitude ?? null,
-        longitude: frozenData?.longitude ?? null,
-        altitude: frozenData?.altitude ?? null,
-        timestamp: frozenData?.timestamp ?? getISOTimestamp(new Date()),
-        samples,
-      };
-      
-      await saveProfile(profile);
+      const profile = buildProfile();
+      await saveProfile({
+        name: profile.name,
+        observer: profile.observer,
+        observations: profile.observations,
+        latitude: profile.latitude,
+        longitude: profile.longitude,
+        altitude: profile.altitude,
+        timestamp: profile.timestamp,
+        samples: profile.samples,
+      });
       toast({
         title: 'Perfil guardado',
         description: 'Los datos se han guardado localmente',
@@ -117,34 +135,78 @@ export function ProfileApp() {
         variant: 'destructive',
       });
     }
-  }, [profileName, observer, frozenData, samples]);
+  }, [buildProfile]);
 
   const handleExportCSV = useCallback(() => {
-    const profile: SnowProfile = {
-      id: 0,
-      name: profileName,
-      observer,
-      latitude: frozenData?.latitude ?? null,
-      longitude: frozenData?.longitude ?? null,
-      altitude: frozenData?.altitude ?? null,
-      timestamp: frozenData?.timestamp ?? getISOTimestamp(new Date()),
-      samples,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    
+    const profile = buildProfile();
     downloadCSV(profile);
     toast({
       title: 'CSV exportado',
       description: 'El archivo se está descargando',
     });
-  }, [profileName, observer, frozenData, samples]);
+  }, [buildProfile]);
+
+  const handleExportGeoJSON = useCallback(() => {
+    const profile = buildProfile();
+    downloadGeoJSON(profile);
+    toast({
+      title: 'GeoJSON exportado',
+      description: 'El archivo se está descargando',
+    });
+  }, [buildProfile]);
+
+  const handleImportGeoJSON = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      const imported = parseGeoJSON(content);
+
+      if (!imported) {
+        toast({
+          title: 'Error de importación',
+          description: 'El archivo GeoJSON no es válido',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      // Load imported data
+      setProfileName(imported.name);
+      setObserver(imported.observer);
+      setObservations(imported.observations);
+      setSamples(imported.samples);
+      setFrozenData({
+        latitude: imported.latitude,
+        longitude: imported.longitude,
+        altitude: imported.altitude,
+        timestamp: imported.timestamp,
+      });
+      setAppState('results');
+
+      toast({
+        title: 'Perfil importado',
+        description: `${imported.samples.length} muestras cargadas`,
+      });
+    };
+    reader.readAsText(file);
+
+    // Reset input
+    event.target.value = '';
+  }, []);
 
   const handleReset = useCallback(() => {
     if (window.confirm('¿Seguro que quieres empezar un nuevo perfil? Se perderán los datos no guardados.')) {
       setAppState('header');
       setProfileName('');
       setObserver('');
+      setObservations('');
       setSamples([]);
       setFrozenData(null);
     }
@@ -154,6 +216,15 @@ export function ProfileApp() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Hidden file input for import */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".geojson,application/geo+json,application/json"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
       {/* Header bar */}
       <header className="bg-primary text-primary-foreground py-4 px-4 shadow-lg sticky top-0 z-40">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
@@ -172,8 +243,18 @@ export function ProfileApp() {
             </div>
           </div>
           
-          {appState !== 'header' && (
-            <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
+            {appState === 'header' && (
+              <button
+                onClick={handleImportGeoJSON}
+                className="p-2 hover:bg-primary-foreground/10 rounded-lg transition-colors flex items-center gap-2"
+                title="Importar GeoJSON"
+              >
+                <Upload className="w-5 h-5" />
+                <span className="text-sm hidden sm:inline">Importar</span>
+              </button>
+            )}
+            {appState !== 'header' && (
               <button
                 onClick={handleReset}
                 className="p-2 hover:bg-primary-foreground/10 rounded-lg transition-colors"
@@ -181,8 +262,8 @@ export function ProfileApp() {
               >
                 <RotateCcw className="w-5 h-5" />
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </header>
 
@@ -193,6 +274,8 @@ export function ProfileApp() {
           setProfileName={setProfileName}
           observer={observer}
           setObserver={setObserver}
+          observations={observations}
+          setObservations={setObservations}
           onStartProfile={handleStartProfile}
           isStarted={appState !== 'header'}
           frozenData={frozenData}
@@ -233,14 +316,18 @@ export function ProfileApp() {
             <SampleTable samples={samples} />
             
             {/* Action buttons */}
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-3">
               <button onClick={handleSaveProfile} className="nivo-btn-success">
                 <Save className="w-5 h-5" />
-                Guardar Perfil
+                Guardar
               </button>
               <button onClick={handleExportCSV} className="nivo-btn-primary">
                 <Download className="w-5 h-5" />
-                Exportar CSV
+                CSV
+              </button>
+              <button onClick={handleExportGeoJSON} className="nivo-btn-primary">
+                <MapPin className="w-5 h-5" />
+                GeoJSON
               </button>
             </div>
             
