@@ -6,6 +6,7 @@ import { StratigraphicChart } from './StratigraphicChart';
 import { SampleTable } from './SampleTable';
 import { SnowSample, SnowProfile, saveProfile, downloadCSV, downloadGeoJSON, parseGeoJSON } from '@/lib/db';
 import { getISOTimestamp } from '@/hooks/useCurrentTime';
+import { latLonToUTM } from '@/lib/utm';
 import { toast } from '@/hooks/use-toast';
 
 type AppState = 'header' | 'sampling' | 'results';
@@ -17,8 +18,10 @@ export function ProfileApp() {
   const [observations, setObservations] = useState('');
   const [samples, setSamples] = useState<SnowSample[]>([]);
   const [frozenData, setFrozenData] = useState<{
-    latitude: number | null;
-    longitude: number | null;
+    utmEasting: number | null;
+    utmNorthing: number | null;
+    utmZone: number | null;
+    utmHemisphere: 'N' | 'S' | null;
     altitude: number | null;
     timestamp: string | null;
   } | null>(null);
@@ -26,21 +29,27 @@ export function ProfileApp() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleStartProfile = useCallback(() => {
-    // Freeze GPS and time when starting
+    // Freeze GPS and time when starting - convert to UTM
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        const { latitude, longitude, altitude } = position.coords;
+        const utm = latLonToUTM(latitude, longitude);
         setFrozenData({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          altitude: position.coords.altitude,
+          utmEasting: utm.easting,
+          utmNorthing: utm.northing,
+          utmZone: utm.zone,
+          utmHemisphere: utm.hemisphere,
+          altitude: altitude,
           timestamp: getISOTimestamp(new Date()),
         });
       },
       () => {
         // Even if GPS fails, freeze the time
         setFrozenData({
-          latitude: null,
-          longitude: null,
+          utmEasting: null,
+          utmNorthing: null,
+          utmZone: null,
+          utmHemisphere: null,
           altitude: null,
           timestamp: getISOTimestamp(new Date()),
         });
@@ -58,6 +67,7 @@ export function ProfileApp() {
     const newSample: SnowSample = {
       ...sample,
       id: samples.length + 1,
+      timestamp: getISOTimestamp(new Date()), // Add timestamp when sample is created
     };
     setSamples(prev => [...prev, newSample]);
     toast({
@@ -101,8 +111,10 @@ export function ProfileApp() {
       name: profileName,
       observer,
       observations,
-      latitude: frozenData?.latitude ?? null,
-      longitude: frozenData?.longitude ?? null,
+      utmEasting: frozenData?.utmEasting ?? null,
+      utmNorthing: frozenData?.utmNorthing ?? null,
+      utmZone: frozenData?.utmZone ?? null,
+      utmHemisphere: frozenData?.utmHemisphere ?? null,
       altitude: frozenData?.altitude ?? null,
       timestamp: frozenData?.timestamp ?? getISOTimestamp(new Date()),
       samples,
@@ -118,8 +130,10 @@ export function ProfileApp() {
         name: profile.name,
         observer: profile.observer,
         observations: profile.observations,
-        latitude: profile.latitude,
-        longitude: profile.longitude,
+        utmEasting: profile.utmEasting,
+        utmNorthing: profile.utmNorthing,
+        utmZone: profile.utmZone,
+        utmHemisphere: profile.utmHemisphere,
         altitude: profile.altitude,
         timestamp: profile.timestamp,
         samples: profile.samples,
@@ -183,8 +197,10 @@ export function ProfileApp() {
       setObservations(imported.observations);
       setSamples(imported.samples);
       setFrozenData({
-        latitude: imported.latitude,
-        longitude: imported.longitude,
+        utmEasting: imported.utmEasting,
+        utmNorthing: imported.utmNorthing,
+        utmZone: imported.utmZone,
+        utmHemisphere: imported.utmHemisphere,
         altitude: imported.altitude,
         timestamp: imported.timestamp,
       });

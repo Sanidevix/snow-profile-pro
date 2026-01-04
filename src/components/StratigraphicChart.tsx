@@ -7,12 +7,12 @@ interface StratigraphicChartProps {
 }
 
 const CHART_CONFIG = {
-  width: 600,
+  width: 700,
   height: 500,
   marginTop: 50,
-  marginRight: 60, // Increased for height labels on right
+  marginRight: 60, // For height labels on right
   marginBottom: 50,
-  marginLeft: 30,  // Reduced since no labels on left
+  marginLeft: 120, // Increased for legend on left
   resistanceMax: 120,
   temperatureMin: -24,
   temperatureMax: 0,
@@ -73,13 +73,17 @@ export function StratigraphicChart({ samples, maxHeight }: StratigraphicChartPro
   const resistanceGridLines = [120, 100, 80, 60, 40, 20, 0];
   const temperatureGridLines = [-24, -20, -16, -12, -8, -4, 0];
 
-  // Temperature line path
+  // Temperature line path - points at center of each sample
   const temperaturePoints = processedSamples
     .filter(s => s.temperature !== null)
-    .map(s => ({
-      x: xScaleTemperature(s.temperature!),
-      y: yScale(s.topHeight),
-    }));
+    .map(s => {
+      // Calculate center height of this sample
+      const centerHeight = s.baseHeight + (s.height / 2);
+      return {
+        x: xScaleTemperature(s.temperature!),
+        y: yScale(centerHeight),
+      };
+    });
 
   const temperaturePath = temperaturePoints.length > 1
     ? `M ${temperaturePoints.map(p => `${p.x},${p.y}`).join(' L ')}`
@@ -303,22 +307,31 @@ export function StratigraphicChart({ samples, maxHeight }: StratigraphicChartPro
           </>
         )}
 
-        {/* Legend */}
-        <g transform={`translate(${marginLeft + innerWidth + 5}, ${marginTop})`}>
-          {GRAIN_TYPES.slice(0, 6).map((grain, i) => (
-            <g key={grain.value} transform={`translate(0, ${i * 18})`}>
+        {/* Legend - positioned on the left */}
+        <g transform={`translate(5, ${marginTop})`}>
+          <text
+            x="0"
+            y="-10"
+            className="text-[9px] font-bold fill-foreground"
+          >
+            Tipo Grano
+          </text>
+          {GRAIN_TYPES.map((grain, i) => (
+            <g key={grain.value} transform={`translate(0, ${i * 20})`}>
               <rect
                 x="0"
                 y="0"
-                width="12"
-                height="12"
+                width="14"
+                height="14"
                 fill={getGrainColor(grain.value)}
                 opacity="0.8"
+                stroke="hsl(var(--chart-axis))"
+                strokeWidth="0.5"
               />
               <text
-                x="16"
-                y="10"
-                className="text-[8px] fill-muted-foreground"
+                x="18"
+                y="11"
+                className="text-[9px] fill-foreground"
               >
                 {grain.label}
               </text>
