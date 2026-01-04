@@ -1,7 +1,8 @@
 import React from 'react';
 import { MapPin, Mountain, Clock, Loader2, FileText } from 'lucide-react';
-import { useGeolocation, formatCoordinate, formatAltitude } from '@/hooks/useGeolocation';
+import { useGeolocation, formatAltitude } from '@/hooks/useGeolocation';
 import { useCurrentTime, formatTimeShortUTC, formatDateUTC } from '@/hooks/useCurrentTime';
+import { latLonToUTM, formatUTM, UTMCoordinates } from '@/lib/utm';
 
 interface ProfileHeaderProps {
   profileName: string;
@@ -13,8 +14,10 @@ interface ProfileHeaderProps {
   onStartProfile: () => void;
   isStarted: boolean;
   frozenData: {
-    latitude: number | null;
-    longitude: number | null;
+    utmEasting: number | null;
+    utmNorthing: number | null;
+    utmZone: number | null;
+    utmHemisphere: 'N' | 'S' | null;
     altitude: number | null;
     timestamp: string | null;
   } | null;
@@ -34,9 +37,20 @@ export function ProfileHeader({
   const geo = useGeolocation();
   const { currentTime } = useCurrentTime(isStarted);
 
+  // Convert live GPS to UTM for display
+  const liveUTM: UTMCoordinates | null = (geo.latitude !== null && geo.longitude !== null)
+    ? latLonToUTM(geo.latitude, geo.longitude)
+    : null;
+
   // Use frozen data if profile is started, otherwise live data
-  const displayLat = frozenData?.latitude ?? geo.latitude;
-  const displayLon = frozenData?.longitude ?? geo.longitude;
+  const displayUTM: UTMCoordinates | null = frozenData?.utmZone !== null && frozenData?.utmZone !== undefined
+    ? {
+        easting: frozenData.utmEasting!,
+        northing: frozenData.utmNorthing!,
+        zone: frozenData.utmZone!,
+        hemisphere: frozenData.utmHemisphere!,
+      }
+    : liveUTM;
   const displayAlt = frozenData?.altitude ?? geo.altitude;
 
   React.useEffect(() => {
@@ -133,15 +147,10 @@ export function ProfileHeader({
         <div className="bg-muted rounded-lg p-4">
           <div className="nivo-field-label flex items-center gap-2">
             <MapPin className="w-4 h-4" />
-            Coordenadas
+            Coordenadas UTM
           </div>
-          <div className="space-y-1">
-            <div className="nivo-data-display text-sm">
-              {formatCoordinate(displayLat, 'lat')}
-            </div>
-            <div className="nivo-data-display text-sm">
-              {formatCoordinate(displayLon, 'lon')}
-            </div>
+          <div className="nivo-data-display text-sm font-mono">
+            {formatUTM(displayUTM)}
           </div>
         </div>
 
