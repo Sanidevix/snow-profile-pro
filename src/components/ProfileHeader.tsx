@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MapPin, Mountain, Clock, Loader2, FileText } from 'lucide-react';
 import { useGeolocation, formatAltitude } from '@/hooks/useGeolocation';
 import { useCurrentTime, formatTimeShortUTC, formatDateUTC } from '@/hooks/useCurrentTime';
-import { latLonToUTM, formatUTM, UTMCoordinates } from '@/lib/utm';
+import { formatDecimalCoords, formatSexagesimalCoords } from '@/lib/db';
 
 interface ProfileHeaderProps {
   profileName: string;
@@ -14,10 +14,8 @@ interface ProfileHeaderProps {
   onStartProfile: () => void;
   isStarted: boolean;
   frozenData: {
-    utmEasting: number | null;
-    utmNorthing: number | null;
-    utmZone: number | null;
-    utmHemisphere: 'N' | 'S' | null;
+    latitude: number | null;
+    longitude: number | null;
     altitude: number | null;
     timestamp: string | null;
   } | null;
@@ -36,21 +34,11 @@ export function ProfileHeader({
 }: ProfileHeaderProps) {
   const geo = useGeolocation();
   const { currentTime } = useCurrentTime(isStarted);
-
-  // Convert live GPS to UTM for display
-  const liveUTM: UTMCoordinates | null = (geo.latitude !== null && geo.longitude !== null)
-    ? latLonToUTM(geo.latitude, geo.longitude)
-    : null;
+  const [showSexagesimal, setShowSexagesimal] = useState(false);
 
   // Use frozen data if profile is started, otherwise live data
-  const displayUTM: UTMCoordinates | null = frozenData?.utmZone !== null && frozenData?.utmZone !== undefined
-    ? {
-        easting: frozenData.utmEasting!,
-        northing: frozenData.utmNorthing!,
-        zone: frozenData.utmZone!,
-        hemisphere: frozenData.utmHemisphere!,
-      }
-    : liveUTM;
+  const displayLat = frozenData?.latitude ?? geo.latitude;
+  const displayLon = frozenData?.longitude ?? geo.longitude;
   const displayAlt = frozenData?.altitude ?? geo.altitude;
 
   React.useEffect(() => {
@@ -75,6 +63,17 @@ export function ProfileHeader({
     if (geo.error) return geo.error;
     if (geo.loading && !geo.latitude) return 'Buscando GPS...';
     return 'GPS Activo';
+  };
+
+  const toggleCoordFormat = () => {
+    setShowSexagesimal(prev => !prev);
+  };
+
+  const formatCoords = () => {
+    if (showSexagesimal) {
+      return formatSexagesimalCoords(displayLat, displayLon);
+    }
+    return formatDecimalCoords(displayLat, displayLon);
   };
 
   return (
@@ -144,13 +143,21 @@ export function ProfileHeader({
 
       {/* GPS and Time display */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="bg-muted rounded-lg p-4">
+        {/* Interactive coordinate card - click to toggle format */}
+        <div 
+          className="bg-muted rounded-lg p-4 cursor-pointer hover:bg-muted/80 transition-colors"
+          onClick={toggleCoordFormat}
+          title="Clic para alternar Decimal/Sexagesimal"
+        >
           <div className="nivo-field-label flex items-center gap-2">
             <MapPin className="w-4 h-4" />
-            Coordenadas UTM
+            Coordenadas WGS84
+            <span className="text-[10px] ml-auto bg-primary/20 text-primary px-1.5 py-0.5 rounded">
+              {showSexagesimal ? 'GMS' : 'DEC'}
+            </span>
           </div>
           <div className="nivo-data-display text-sm font-mono">
-            {formatUTM(displayUTM)}
+            {formatCoords()}
           </div>
         </div>
 

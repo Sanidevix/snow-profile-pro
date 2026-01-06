@@ -12,11 +12,17 @@ const CHART_CONFIG = {
   marginTop: 50,
   marginRight: 60, // For height labels on right
   marginBottom: 50,
-  marginLeft: 120, // Increased for legend on left
+  marginLeft: 120, // For legend on left
   resistanceMax: 120,
   temperatureMin: -24,
   temperatureMax: 0,
   heightMax: 200, // Default max height in cm
+};
+
+// IACS color mapping for grain types
+const getGrainColor = (grainType: number): string => {
+  const grain = GRAIN_TYPES.find(g => g.value === grainType);
+  return grain?.color ?? '#808080';
 };
 
 export function StratigraphicChart({ samples, maxHeight }: StratigraphicChartProps) {
@@ -88,22 +94,6 @@ export function StratigraphicChart({ samples, maxHeight }: StratigraphicChartPro
   const temperaturePath = temperaturePoints.length > 1
     ? `M ${temperaturePoints.map(p => `${p.x},${p.y}`).join(' L ')}`
     : '';
-
-  // Get grain type color
-  const getGrainColor = (grainType: number): string => {
-    const colors: Record<number, string> = {
-      1: 'hsl(200, 80%, 60%)',
-      2: 'hsl(180, 70%, 50%)',
-      3: 'hsl(150, 60%, 50%)',
-      4: 'hsl(120, 50%, 50%)',
-      5: 'hsl(80, 60%, 50%)',
-      6: 'hsl(50, 70%, 50%)',
-      7: 'hsl(30, 80%, 55%)',
-      8: 'hsl(0, 70%, 55%)',
-      9: 'hsl(280, 60%, 55%)',
-    };
-    return colors[grainType] || 'hsl(220, 75%, 45%)';
-  };
 
   return (
     <div className="nivo-chart-container overflow-x-auto">
@@ -248,8 +238,7 @@ export function StratigraphicChart({ samples, maxHeight }: StratigraphicChartPro
           </g>
         ))}
 
-        {/* Resistance bars (horizontal histogram stacked from base) */}
-        {/* Bars grow from right (0) towards left (120) */}
+        {/* Resistance bars - colored by grain type (IACS colors) */}
         {processedSamples.map((sample, index) => {
           const barWidth = (sample.resistance / CHART_CONFIG.resistanceMax) * innerWidth;
           const barY = yScale(sample.topHeight);
@@ -268,16 +257,17 @@ export function StratigraphicChart({ samples, maxHeight }: StratigraphicChartPro
                 fill={getGrainColor(sample.grainType)}
                 stroke="hsl(var(--chart-axis))"
                 strokeWidth="1"
-                opacity="0.8"
+                opacity="0.85"
                 className="animate-draw-bar"
                 style={{ animationDelay: `${index * 0.1}s` }}
               />
-              {/* Grain type label */}
+              {/* Grain type label inside bar */}
               {barHeight > 15 && (
                 <text
                   x={barX + 5}
                   y={barY + barHeight / 2 + 4}
                   className="text-[10px] font-bold fill-foreground"
+                  style={{ textShadow: '0 0 3px white, 0 0 3px white' }}
                 >
                   {grainLabel}
                 </text>
@@ -307,14 +297,14 @@ export function StratigraphicChart({ samples, maxHeight }: StratigraphicChartPro
           </>
         )}
 
-        {/* Legend - positioned on the left */}
+        {/* Legend - positioned on the left with IACS colors */}
         <g transform={`translate(5, ${marginTop})`}>
           <text
             x="0"
             y="-10"
             className="text-[9px] font-bold fill-foreground"
           >
-            Tipo Grano
+            Tipo Grano (IACS)
           </text>
           {GRAIN_TYPES.map((grain, i) => (
             <g key={grain.value} transform={`translate(0, ${i * 20})`}>
@@ -323,8 +313,8 @@ export function StratigraphicChart({ samples, maxHeight }: StratigraphicChartPro
                 y="0"
                 width="14"
                 height="14"
-                fill={getGrainColor(grain.value)}
-                opacity="0.8"
+                fill={grain.color}
+                opacity="0.85"
                 stroke="hsl(var(--chart-axis))"
                 strokeWidth="0.5"
               />

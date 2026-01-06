@@ -1,12 +1,12 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { Download, Eye, RotateCcw, Save, ChevronLeft, Upload, MapPin } from 'lucide-react';
+import { Download, Eye, RotateCcw, Save, ChevronLeft, Upload, MapPin, FolderOpen } from 'lucide-react';
 import { ProfileHeader } from './ProfileHeader';
 import { SampleForm } from './SampleForm';
 import { StratigraphicChart } from './StratigraphicChart';
 import { SampleTable } from './SampleTable';
+import { ProfileManager } from './ProfileManager';
 import { SnowSample, SnowProfile, saveProfile, downloadCSV, downloadGeoJSON, parseGeoJSON } from '@/lib/db';
 import { getISOTimestamp } from '@/hooks/useCurrentTime';
-import { latLonToUTM } from '@/lib/utm';
 import { toast } from '@/hooks/use-toast';
 
 type AppState = 'header' | 'sampling' | 'results';
@@ -18,38 +18,32 @@ export function ProfileApp() {
   const [observations, setObservations] = useState('');
   const [samples, setSamples] = useState<SnowSample[]>([]);
   const [frozenData, setFrozenData] = useState<{
-    utmEasting: number | null;
-    utmNorthing: number | null;
-    utmZone: number | null;
-    utmHemisphere: 'N' | 'S' | null;
+    latitude: number | null;
+    longitude: number | null;
     altitude: number | null;
     timestamp: string | null;
   } | null>(null);
   const [showChart, setShowChart] = useState(true);
+  const [showProfileManager, setShowProfileManager] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleStartProfile = useCallback(() => {
-    // Freeze GPS and time when starting - convert to UTM
+    // Freeze GPS and time when starting - store WGS84 decimal
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude, altitude } = position.coords;
-        const utm = latLonToUTM(latitude, longitude);
         setFrozenData({
-          utmEasting: utm.easting,
-          utmNorthing: utm.northing,
-          utmZone: utm.zone,
-          utmHemisphere: utm.hemisphere,
-          altitude: altitude,
+          latitude,
+          longitude,
+          altitude,
           timestamp: getISOTimestamp(new Date()),
         });
       },
       () => {
         // Even if GPS fails, freeze the time
         setFrozenData({
-          utmEasting: null,
-          utmNorthing: null,
-          utmZone: null,
-          utmHemisphere: null,
+          latitude: null,
+          longitude: null,
           altitude: null,
           timestamp: getISOTimestamp(new Date()),
         });
@@ -67,7 +61,7 @@ export function ProfileApp() {
     const newSample: SnowSample = {
       ...sample,
       id: samples.length + 1,
-      timestamp: getISOTimestamp(new Date()), // Add timestamp when sample is created
+      timestamp: getISOTimestamp(new Date()), // ISO 8601 timestamp when sample is created
     };
     setSamples(prev => [...prev, newSample]);
     toast({
@@ -111,10 +105,8 @@ export function ProfileApp() {
       name: profileName,
       observer,
       observations,
-      utmEasting: frozenData?.utmEasting ?? null,
-      utmNorthing: frozenData?.utmNorthing ?? null,
-      utmZone: frozenData?.utmZone ?? null,
-      utmHemisphere: frozenData?.utmHemisphere ?? null,
+      latitude: frozenData?.latitude ?? null,
+      longitude: frozenData?.longitude ?? null,
       altitude: frozenData?.altitude ?? null,
       timestamp: frozenData?.timestamp ?? getISOTimestamp(new Date()),
       samples,
@@ -130,10 +122,8 @@ export function ProfileApp() {
         name: profile.name,
         observer: profile.observer,
         observations: profile.observations,
-        utmEasting: profile.utmEasting,
-        utmNorthing: profile.utmNorthing,
-        utmZone: profile.utmZone,
-        utmHemisphere: profile.utmHemisphere,
+        latitude: profile.latitude,
+        longitude: profile.longitude,
         altitude: profile.altitude,
         timestamp: profile.timestamp,
         samples: profile.samples,
@@ -197,10 +187,8 @@ export function ProfileApp() {
       setObservations(imported.observations);
       setSamples(imported.samples);
       setFrozenData({
-        utmEasting: imported.utmEasting,
-        utmNorthing: imported.utmNorthing,
-        utmZone: imported.utmZone,
-        utmHemisphere: imported.utmHemisphere,
+        latitude: imported.latitude,
+        longitude: imported.longitude,
         altitude: imported.altitude,
         timestamp: imported.timestamp,
       });
@@ -215,6 +203,20 @@ export function ProfileApp() {
 
     // Reset input
     event.target.value = '';
+  }, []);
+
+  const handleLoadProfile = useCallback((profile: SnowProfile) => {
+    setProfileName(profile.name);
+    setObserver(profile.observer);
+    setObservations(profile.observations);
+    setSamples(profile.samples);
+    setFrozenData({
+      latitude: profile.latitude,
+      longitude: profile.longitude,
+      altitude: profile.altitude,
+      timestamp: profile.timestamp,
+    });
+    setAppState('results');
   }, []);
 
   const handleReset = useCallback(() => {
@@ -241,6 +243,13 @@ export function ProfileApp() {
         onChange={handleFileChange}
       />
 
+      {/* Profile Manager Modal */}
+      <ProfileManager
+        open={showProfileManager}
+        onOpenChange={setShowProfileManager}
+        onLoadProfile={handleLoadProfile}
+      />
+
       {/* Header bar */}
       <header className="bg-primary text-primary-foreground py-4 px-4 shadow-lg sticky top-0 z-40">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
@@ -261,14 +270,24 @@ export function ProfileApp() {
           
           <div className="flex items-center gap-2">
             {appState === 'header' && (
-              <button
-                onClick={handleImportGeoJSON}
-                className="p-2 hover:bg-primary-foreground/10 rounded-lg transition-colors flex items-center gap-2"
-                title="Importar GeoJSON"
-              >
-                <Upload className="w-5 h-5" />
-                <span className="text-sm hidden sm:inline">Importar</span>
-              </button>
+              <>
+                <button
+                  onClick={() => setShowProfileManager(true)}
+                  className="p-2 hover:bg-primary-foreground/10 rounded-lg transition-colors flex items-center gap-2"
+                  title="Explorar perfiles guardados"
+                >
+                  <FolderOpen className="w-5 h-5" />
+                  <span className="text-sm hidden sm:inline">Archivo</span>
+                </button>
+                <button
+                  onClick={handleImportGeoJSON}
+                  className="p-2 hover:bg-primary-foreground/10 rounded-lg transition-colors flex items-center gap-2"
+                  title="Importar GeoJSON"
+                >
+                  <Upload className="w-5 h-5" />
+                  <span className="text-sm hidden sm:inline">Importar</span>
+                </button>
+              </>
             )}
             {appState !== 'header' && (
               <button
