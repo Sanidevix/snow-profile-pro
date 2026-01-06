@@ -1,5 +1,4 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
-import { latLonToUTM, utmToLatLon, UTMCoordinates } from './utm';
 
 // Types for snow profile data
 export interface SnowSample {
@@ -18,11 +17,9 @@ export interface SnowProfile {
   name: string;
   observer: string;
   observations: string; // Field for observations
-  // UTM coordinates
-  utmEasting: number | null;
-  utmNorthing: number | null;
-  utmZone: number | null;
-  utmHemisphere: 'N' | 'S' | null;
+  // WGS84 decimal coordinates (standard)
+  latitude: number | null;
+  longitude: number | null;
   altitude: number | null;
   timestamp: string; // ISO 8601 UTC format
   samples: SnowSample[];
@@ -43,7 +40,7 @@ let dbInstance: IDBPDatabase<NivoDBSchema> | null = null;
 export async function getDB(): Promise<IDBPDatabase<NivoDBSchema>> {
   if (dbInstance) return dbInstance;
 
-  dbInstance = await openDB<NivoDBSchema>('nivo-profiles-db', 2, {
+  dbInstance = await openDB<NivoDBSchema>('nivo-profiles-db', 3, {
     upgrade(db, oldVersion) {
       if (oldVersion < 1) {
         const profileStore = db.createObjectStore('profiles', {
@@ -110,17 +107,17 @@ export const RESISTANCE_VALUES = [
   { label: 'F', value: 2, description: 'Puño (Fist)' },
 ] as const;
 
-// Grain types per AEMET classification (1-9)
+// Grain types per AEMET classification (1-9) with IACS colors
 export const GRAIN_TYPES = [
-  { value: 1, label: 'PP', name: 'Nieve reciente (Precipitation Particles)' },
-  { value: 2, label: 'DF', name: 'Partículas fragmentadas (Decomposing Fragments)' },
-  { value: 3, label: 'RG', name: 'Grano redondo (Rounded Grains)' },
-  { value: 4, label: 'FC', name: 'Cristales facetados (Faceted Crystals)' },
-  { value: 5, label: 'DH', name: 'Escarcha de profundidad (Depth Hoar)' },
-  { value: 6, label: 'SH', name: 'Escarcha superficial (Surface Hoar)' },
-  { value: 7, label: 'MF', name: 'Granos de fusión (Melt Forms)' },
-  { value: 8, label: 'IF', name: 'Costras de hielo (Ice Formations)' },
-  { value: 9, label: 'MM', name: 'Formas mecánicas (Machine Made)' },
+  { value: 1, label: 'PP', name: 'Nieve reciente (Precipitation Particles)', color: '#00FF00' },
+  { value: 2, label: 'DF', name: 'Partículas fragmentadas (Decomposing Fragments)', color: '#228B22' },
+  { value: 3, label: 'RG', name: 'Grano redondo (Rounded Grains)', color: '#FFB6C1' },
+  { value: 4, label: 'FC', name: 'Cristales facetados (Faceted Crystals)', color: '#ADD8E6' },
+  { value: 5, label: 'DH', name: 'Escarcha de profundidad (Depth Hoar)', color: '#0000FF' },
+  { value: 6, label: 'SH', name: 'Escarcha superficial (Surface Hoar)', color: '#FF00FF' },
+  { value: 7, label: 'MF', name: 'Granos de fusión (Melt Forms)', color: '#FF0000' },
+  { value: 8, label: 'IF', name: 'Costras de hielo (Ice Formations)', color: '#8B0000' },
+  { value: 9, label: 'GP', name: 'Granizo/Graupel (Graupel)', color: '#FFFF00' },
 ] as const;
 
 // Humidity values per AEMET standard
@@ -132,12 +129,28 @@ export const HUMIDITY_VALUES = [
   { value: 'S', label: 'S - Empapada', description: 'Saturada de agua' },
 ] as const;
 
-// Format UTM for display
-function formatUTMDisplay(profile: SnowProfile): string {
-  if (profile.utmZone === null || profile.utmEasting === null || profile.utmNorthing === null) {
-    return 'N/A';
-  }
-  return `${profile.utmZone}${profile.utmHemisphere} ${Math.round(profile.utmEasting)}E ${Math.round(profile.utmNorthing)}N`;
+// Format coordinates for display - decimal
+export function formatDecimalCoords(lat: number | null, lon: number | null): string {
+  if (lat === null || lon === null) return 'N/A';
+  return `${lat.toFixed(6)}°, ${lon.toFixed(6)}°`;
+}
+
+// Format coordinates for display - sexagesimal (DMS)
+export function formatSexagesimalCoords(lat: number | null, lon: number | null): string {
+  if (lat === null || lon === null) return 'N/A';
+  
+  const formatDMS = (value: number, isLat: boolean): string => {
+    const direction = isLat 
+      ? (value >= 0 ? 'N' : 'S')
+      : (value >= 0 ? 'E' : 'W');
+    const absValue = Math.abs(value);
+    const degrees = Math.floor(absValue);
+    const minutes = Math.floor((absValue - degrees) * 60);
+    const seconds = ((absValue - degrees) * 60 - minutes) * 60;
+    return `${degrees}°${minutes}'${seconds.toFixed(1)}"${direction}`;
+  };
+  
+  return `${formatDMS(lat, true)} ${formatDMS(lon, false)}`;
 }
 
 // Export profile to CSV
@@ -148,7 +161,8 @@ export function exportToCSV(profile: SnowProfile): string {
     `Nombre del Perfil,${profile.name}`,
     `Observador,${profile.observer}`,
     `Observaciones,"${(profile.observations || '').replace(/"/g, '""')}"`,
-    `Coordenadas UTM,${formatUTMDisplay(profile)}`,
+    `Latitud,${profile.latitude ?? 'N/A'}`,
+    `Longitud,${profile.longitude ?? 'N/A'}`,
     `Altitud (m),${profile.altitude ?? 'N/A'}`,
     `Fecha/Hora UTC,${profile.timestamp}`,
     '',
@@ -194,28 +208,17 @@ export function downloadCSV(profile: SnowProfile): void {
   URL.revokeObjectURL(url);
 }
 
-// Export profile to GeoJSON (converts UTM to WGS84 for GeoJSON standard)
+// Export profile to GeoJSON (standard WGS84 format)
 export function exportToGeoJSON(profile: SnowProfile): string {
-  // Convert UTM to lat/lon for GeoJSON (GeoJSON requires WGS84)
-  let longitude = 0;
-  let latitude = 0;
-  
-  if (profile.utmZone !== null && profile.utmEasting !== null && profile.utmNorthing !== null && profile.utmHemisphere !== null) {
-    const latLon = utmToLatLon({
-      easting: profile.utmEasting,
-      northing: profile.utmNorthing,
-      zone: profile.utmZone,
-      hemisphere: profile.utmHemisphere,
-    });
-    longitude = latLon.longitude;
-    latitude = latLon.latitude;
-  }
-
   const feature = {
     type: 'Feature',
     geometry: {
       type: 'Point',
-      coordinates: [longitude, latitude, profile.altitude ?? 0]
+      coordinates: [
+        profile.longitude ?? 0, 
+        profile.latitude ?? 0, 
+        profile.altitude ?? 0
+      ] // [longitude, latitude, altitude] - GeoJSON standard
     },
     properties: {
       name: profile.name,
@@ -224,13 +227,6 @@ export function exportToGeoJSON(profile: SnowProfile): string {
       timestamp: profile.timestamp,
       createdAt: profile.createdAt,
       updatedAt: profile.updatedAt,
-      // Store UTM in properties for import
-      utm: {
-        easting: profile.utmEasting,
-        northing: profile.utmNorthing,
-        zone: profile.utmZone,
-        hemisphere: profile.utmHemisphere,
-      },
       totalHeight: profile.samples.reduce((sum, s) => sum + s.height, 0),
       sampleCount: profile.samples.length,
       samples: profile.samples.map((sample, index) => ({
@@ -244,7 +240,7 @@ export function exportToGeoJSON(profile: SnowProfile): string {
         grainTypeLabel: GRAIN_TYPES.find(g => g.value === sample.grainType)?.label ?? null,
         diameter: sample.diameter,
         humidity: sample.humidity,
-        timestamp: sample.timestamp,
+        timestamp: sample.timestamp, // ISO 8601 timestamp per sample
       }))
     }
   };
@@ -269,7 +265,7 @@ export function downloadGeoJSON(profile: SnowProfile): void {
   URL.revokeObjectURL(url);
 }
 
-// Import profile from GeoJSON (converts WGS84 to UTM)
+// Import profile from GeoJSON (standard WGS84 format)
 export function parseGeoJSON(content: string): Omit<SnowProfile, 'id' | 'createdAt' | 'updatedAt'> | null {
   try {
     const data = JSON.parse(content);
@@ -281,25 +277,10 @@ export function parseGeoJSON(content: string): Omit<SnowProfile, 'id' | 'created
     const coords = data.geometry.coordinates || [];
     const props = data.properties;
 
-    // Check if UTM is stored in properties, otherwise convert from WGS84
-    let utmEasting: number | null = null;
-    let utmNorthing: number | null = null;
-    let utmZone: number | null = null;
-    let utmHemisphere: 'N' | 'S' | null = null;
-
-    if (props.utm && props.utm.zone !== null) {
-      utmEasting = props.utm.easting;
-      utmNorthing = props.utm.northing;
-      utmZone = props.utm.zone;
-      utmHemisphere = props.utm.hemisphere;
-    } else if (coords[0] !== 0 && coords[1] !== 0) {
-      // Convert WGS84 to UTM
-      const utm = latLonToUTM(coords[1], coords[0]);
-      utmEasting = utm.easting;
-      utmNorthing = utm.northing;
-      utmZone = utm.zone;
-      utmHemisphere = utm.hemisphere;
-    }
+    // GeoJSON standard: [longitude, latitude, altitude]
+    const longitude = coords[0] ?? null;
+    const latitude = coords[1] ?? null;
+    const altitude = coords[2] ?? null;
 
     const samples: SnowSample[] = (props.samples || []).map((s: any, index: number) => ({
       id: s.id ?? index + 1,
@@ -309,18 +290,16 @@ export function parseGeoJSON(content: string): Omit<SnowProfile, 'id' | 'created
       grainType: s.grainType ?? 1,
       diameter: s.diameter ?? null,
       humidity: s.humidity ?? null,
-      timestamp: s.timestamp ?? null,
+      timestamp: s.timestamp ?? null, // Preserve sample timestamp
     }));
 
     return {
       name: props.name || 'Perfil Importado',
       observer: props.observer || '',
       observations: props.observations || '',
-      utmEasting,
-      utmNorthing,
-      utmZone,
-      utmHemisphere,
-      altitude: coords[2] ?? null,
+      latitude,
+      longitude,
+      altitude,
       timestamp: props.timestamp || new Date().toISOString(),
       samples
     };
