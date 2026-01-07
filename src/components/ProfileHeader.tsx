@@ -3,6 +3,7 @@ import { MapPin, Mountain, Clock, Loader2, FileText } from 'lucide-react';
 import { useGeolocation, formatAltitude } from '@/hooks/useGeolocation';
 import { useCurrentTime, formatTimeShortUTC, formatDateUTC } from '@/hooks/useCurrentTime';
 import { formatDecimalCoords, formatSexagesimalCoords } from '@/lib/db';
+import { useI18n } from '@/i18n/context';
 
 interface ProfileHeaderProps {
   profileName: string;
@@ -32,6 +33,7 @@ export function ProfileHeader({
   isStarted,
   frozenData,
 }: ProfileHeaderProps) {
+  const { t } = useI18n();
   const geo = useGeolocation();
   const { currentTime } = useCurrentTime(isStarted);
   const [showSexagesimal, setShowSexagesimal] = useState(false);
@@ -59,10 +61,10 @@ export function ProfileHeader({
   };
 
   const getGpsStatusText = () => {
-    if (isStarted) return 'GPS Fijado';
-    if (geo.error) return geo.error;
-    if (geo.loading && !geo.latitude) return 'Buscando GPS...';
-    return 'GPS Activo';
+    if (isStarted) return t.header.gpsFixed;
+    if (geo.error) return t.header.gpsError;
+    if (geo.loading && !geo.latitude) return t.header.gpsSearching;
+    return t.header.gpsActive;
   };
 
   const toggleCoordFormat = () => {
@@ -81,7 +83,7 @@ export function ProfileHeader({
       <div className="flex items-center justify-between">
         <h2 className="nivo-section-title flex items-center gap-2 mb-0 pb-0 border-0">
           <Mountain className="w-6 h-6" />
-          Nuevo Perfil Estratigráfico
+          {t.header.newProfile}
         </h2>
         <div className={getGpsBadgeClass()}>
           {geo.loading && !geo.latitude ? (
@@ -97,7 +99,7 @@ export function ProfileHeader({
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="nivo-field-label" htmlFor="profileName">
-            Nombre del Perfil
+            {t.header.profileName}
           </label>
           <input
             id="profileName"
@@ -105,13 +107,13 @@ export function ProfileHeader({
             className="nivo-input"
             value={profileName}
             onChange={(e) => setProfileName(e.target.value)}
-            placeholder="Ej: Portalet Norte"
+            placeholder={t.header.profileNamePlaceholder}
             disabled={isStarted}
           />
         </div>
         <div>
           <label className="nivo-field-label" htmlFor="observer">
-            Observador
+            {t.header.observer}
           </label>
           <input
             id="observer"
@@ -119,7 +121,7 @@ export function ProfileHeader({
             className="nivo-input"
             value={observer}
             onChange={(e) => setObserver(e.target.value)}
-            placeholder="Ej: J. García"
+            placeholder={t.header.observerPlaceholder}
             disabled={isStarted}
           />
         </div>
@@ -129,14 +131,14 @@ export function ProfileHeader({
       <div>
         <label className="nivo-field-label flex items-center gap-2" htmlFor="observations">
           <FileText className="w-4 h-4" />
-          Observaciones
+          {t.header.observations}
         </label>
         <textarea
           id="observations"
           className="nivo-input min-h-[80px] resize-y"
           value={observations}
           onChange={(e) => setObservations(e.target.value)}
-          placeholder="Ej: Condiciones meteorológicas, características del terreno, incidencias..."
+          placeholder={t.header.observationsPlaceholder}
           disabled={isStarted}
         />
       </div>
@@ -147,11 +149,11 @@ export function ProfileHeader({
         <div 
           className="bg-muted rounded-lg p-4 cursor-pointer hover:bg-muted/80 transition-colors"
           onClick={toggleCoordFormat}
-          title="Clic para alternar Decimal/Sexagesimal"
+          title={t.header.coordinates}
         >
           <div className="nivo-field-label flex items-center gap-2">
             <MapPin className="w-4 h-4" />
-            Coordenadas WGS84
+            {t.header.coordinates}
             <span className="text-[10px] ml-auto bg-primary/20 text-primary px-1.5 py-0.5 rounded">
               {showSexagesimal ? 'GMS' : 'DEC'}
             </span>
@@ -164,7 +166,7 @@ export function ProfileHeader({
         <div className="bg-muted rounded-lg p-4">
           <div className="nivo-field-label flex items-center gap-2">
             <Mountain className="w-4 h-4" />
-            Altitud
+            {t.header.altitude}
           </div>
           <div className="nivo-data-display text-2xl">
             {formatAltitude(displayAlt)}
@@ -179,7 +181,7 @@ export function ProfileHeader({
         <div className="bg-muted rounded-lg p-4">
           <div className="nivo-field-label flex items-center gap-2">
             <Clock className="w-4 h-4" />
-            Hora UTC
+            {t.header.timeUTC}
           </div>
           <div className="nivo-data-display text-lg">
             {frozenData?.timestamp 
@@ -203,7 +205,7 @@ export function ProfileHeader({
           disabled={!profileName.trim() || !observer.trim()}
           className="nivo-btn-primary w-full"
         >
-          Iniciar Toma de Muestras
+          {t.header.startSampling}
         </button>
       )}
     </div>

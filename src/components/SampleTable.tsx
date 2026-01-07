@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Trash2, ArrowUp, ArrowDown, Check, X } from 'lucide-react';
 import { SnowSample, GRAIN_TYPES, RESISTANCE_VALUES, HUMIDITY_VALUES } from '@/lib/db';
+import { useI18n } from '@/i18n/context';
 
 interface SampleTableProps {
   samples: SnowSample[];
@@ -9,6 +10,7 @@ interface SampleTableProps {
 }
 
 export function SampleTable({ samples, onDeleteSample, onReorderSample }: SampleTableProps) {
+  const { t } = useI18n();
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [newPosition, setNewPosition] = useState<string>('');
 
@@ -16,7 +18,7 @@ export function SampleTable({ samples, onDeleteSample, onReorderSample }: Sample
     return (
       <div className="nivo-card text-center py-8">
         <p className="text-muted-foreground">
-          No hay muestras registradas
+          {t.table.noSamples}
         </p>
       </div>
     );
@@ -82,24 +84,24 @@ export function SampleTable({ samples, onDeleteSample, onReorderSample }: Sample
 
   return (
     <div className="nivo-card overflow-x-auto">
-      <h3 className="nivo-section-title">Detalle de Muestras</h3>
+      <h3 className="nivo-section-title">{t.table.sampleDetails}</h3>
       {canEdit && (
         <p className="text-xs text-muted-foreground mb-3">
-          Haz clic en el número de muestra para cambiar su posición
+          {t.table.clickToChangePosition}
         </p>
       )}
       <table className="nivo-table">
         <thead>
           <tr>
             <th>#</th>
-            {canEdit && <th>Orden</th>}
-            <th>Altura (cm)</th>
-            <th>Acum (cm)</th>
-            <th>T (°C)</th>
-            <th>R</th>
-            <th>Grano</th>
-            <th>Ø (mm)</th>
-            <th>H</th>
+            {canEdit && <th>{t.table.order}</th>}
+            <th>{t.table.height}</th>
+            <th>{t.table.accum}</th>
+            <th>{t.table.temp}</th>
+            <th>{t.table.hardness}</th>
+            <th>{t.table.grain}</th>
+            <th>{t.table.size}</th>
+            <th>{t.table.humidity}</th>
             {onDeleteSample && <th></th>}
           </tr>
         </thead>
@@ -125,14 +127,14 @@ export function SampleTable({ samples, onDeleteSample, onReorderSample }: Sample
                     <button
                       onClick={() => handleConfirmReorder(index)}
                       className="p-1 text-primary hover:bg-primary/10 rounded"
-                      title="Confirmar"
+                      title={t.table.confirm}
                     >
                       <Check className="w-3 h-3" />
                     </button>
                     <button
                       onClick={handleCancelEdit}
                       className="p-1 text-destructive hover:bg-destructive/10 rounded"
-                      title="Cancelar"
+                      title={t.table.cancel}
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -142,7 +144,7 @@ export function SampleTable({ samples, onDeleteSample, onReorderSample }: Sample
                     onClick={() => canEdit && handleStartEdit(index)}
                     className={canEdit ? "hover:bg-primary/10 px-2 py-1 rounded cursor-pointer" : ""}
                     disabled={!canEdit}
-                    title={canEdit ? "Clic para cambiar posición" : ""}
+                    title={canEdit ? t.table.clickToChangePosition : ""}
                   >
                     {index + 1}
                   </button>
@@ -155,7 +157,7 @@ export function SampleTable({ samples, onDeleteSample, onReorderSample }: Sample
                       onClick={() => handleMoveUp(index)}
                       disabled={index === 0}
                       className="p-1 hover:bg-primary/10 rounded disabled:opacity-30 disabled:cursor-not-allowed"
-                      title="Subir"
+                      title={t.table.moveUp}
                     >
                       <ArrowUp className="w-4 h-4" />
                     </button>
@@ -163,7 +165,7 @@ export function SampleTable({ samples, onDeleteSample, onReorderSample }: Sample
                       onClick={() => handleMoveDown(index)}
                       disabled={index === samples.length - 1}
                       className="p-1 hover:bg-primary/10 rounded disabled:opacity-30 disabled:cursor-not-allowed"
-                      title="Bajar"
+                      title={t.table.moveDown}
                     >
                       <ArrowDown className="w-4 h-4" />
                     </button>
@@ -192,7 +194,7 @@ export function SampleTable({ samples, onDeleteSample, onReorderSample }: Sample
                   <button
                     onClick={() => onDeleteSample(index)}
                     className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
-                    title="Eliminar muestra"
+                    title={t.table.delete}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

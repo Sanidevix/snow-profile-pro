@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useCallback, useEffect } fr
 import { Language, Translation, LANGUAGES } from './types';
 import { translations } from './translations';
 
-const STORAGE_KEY = 'nivoapp-language';
+const STORAGE_KEY = 'snowstrat-language';
 const DEFAULT_LANGUAGE: Language = 'es';
 
 interface I18nContextType {

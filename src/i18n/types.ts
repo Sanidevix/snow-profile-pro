@@ -1,5 +1,5 @@
 export type Language = 
-  | 'es'    // Español (default)
+  | 'es'    // Castellano (default)
   | 'gl'    // Gallego
   | 'ast'   // Asturiano
   | 'eu'    // Euskera
@@ -43,17 +43,24 @@ export interface Translation {
   // Sample form
   samples: {
     newSample: string;
+    sampleNumber: string;
     layerHeight: string;
+    layerHeightHint: string;
     grainType: string;
+    grainTypeSelect: string;
     grainSize: string;
     hardness: string;
+    hardnessHint: string;
     humidity: string;
+    humidityHint: string;
     temperature: string;
     addSample: string;
+    nextSample: string;
     finishProfile: string;
     sampleRegistered: string;
     layerAdded: string;
     totalHeight: string;
+    accumulatedHeight: string;
   };
   
   // Results
@@ -78,16 +85,25 @@ export interface Translation {
   table: {
     sample: string;
     height: string;
+    accum: string;
     grain: string;
     size: string;
     hardness: string;
     humidity: string;
     temp: string;
     actions: string;
+    order: string;
     delete: string;
     deleted: string;
     reordered: string;
     movedTo: string;
+    noSamples: string;
+    sampleDetails: string;
+    clickToChangePosition: string;
+    moveUp: string;
+    moveDown: string;
+    confirm: string;
+    cancel: string;
   };
   
   // Profile manager
@@ -152,7 +168,7 @@ export interface LanguageInfo {
 }
 
 export const LANGUAGES: LanguageInfo[] = [
-  { code: 'es', name: 'Spanish', nativeName: 'Español', flag: 'ES' },
+  { code: 'es', name: 'Spanish', nativeName: 'Castellano', flag: 'ES' },
   { code: 'gl', name: 'Galician', nativeName: 'Galego', flag: 'ES-GA' },
   { code: 'ast', name: 'Asturian', nativeName: 'Asturianu', flag: 'ES-AS' },
   { code: 'eu', name: 'Basque', nativeName: 'Euskara', flag: 'ES-PV' },

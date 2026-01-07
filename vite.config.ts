@@ -15,8 +15,8 @@ export default defineConfig(({ mode }) => ({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'NivoApp - Perfil Estratigráfico',
-        short_name: 'NivoApp',
+        name: 'SnowStrat Field - Perfiles Estratigráficos Nivales',
+        short_name: 'SnowStrat Field',
         description: 'Toma de datos de perfiles de nieve - Estándar AEMET',
         theme_color: '#1e40af',
         background_color: '#f5f7fa',
