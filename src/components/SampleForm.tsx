@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Check, Thermometer, Ruler, Droplets, Snowflake } from 'lucide-react';
 import { SnowSample, RESISTANCE_VALUES, GRAIN_TYPES, HUMIDITY_VALUES } from '@/lib/db';
+import { useI18n } from '@/i18n/context';
 
 interface SampleFormProps {
   sampleNumber: number;
@@ -15,6 +16,7 @@ export function SampleForm({
   onFinishProfile,
   totalHeight,
 }: SampleFormProps) {
+  const { t } = useI18n();
   const [height, setHeight] = useState<string>('');
   const [temperature, setTemperature] = useState<string>('');
   const [resistance, setResistance] = useState<number | null>(null);
@@ -54,10 +56,10 @@ export function SampleForm({
     <div className="nivo-card space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="nivo-section-title mb-0 pb-0 border-0">
-          Muestra #{sampleNumber}
+          {t.samples.sampleNumber.replace('{number}', String(sampleNumber))}
         </h2>
         <div className="bg-primary/10 text-primary px-4 py-2 rounded-full font-bold">
-          Altura acumulada: {totalHeight} cm
+          {t.samples.accumulatedHeight}: {totalHeight} cm
         </div>
       </div>
 
@@ -66,7 +68,7 @@ export function SampleForm({
         <div>
           <label className="nivo-field-label flex items-center gap-2">
             <Ruler className="w-4 h-4" />
-            Altura de la capa (cm) *
+            {t.samples.layerHeight} *
           </label>
           <input
             type="number"
@@ -79,7 +81,7 @@ export function SampleForm({
             required
           />
           <p className="text-xs text-muted-foreground mt-1">
-            Espesor de esta capa de nieve
+            {t.samples.layerHeightHint}
           </p>
         </div>
 
@@ -87,7 +89,7 @@ export function SampleForm({
         <div>
           <label className="nivo-field-label flex items-center gap-2">
             <Thermometer className="w-4 h-4" />
-            Temperatura (°C)
+            {t.samples.temperature}
           </label>
           <input
             type="number"
@@ -103,7 +105,7 @@ export function SampleForm({
         {/* Resistance - Required with quick buttons */}
         <div>
           <label className="nivo-field-label">
-            Resistencia (R) *
+            {t.samples.hardness} *
           </label>
           <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-3">
             {RESISTANCE_VALUES.map((r) => (
@@ -123,12 +125,12 @@ export function SampleForm({
             className="nivo-input"
             value={resistance ?? ''}
             onChange={(e) => setResistance(e.target.value ? parseInt(e.target.value) : null)}
-            placeholder="Valor personalizado (0-120)"
+            placeholder="0-120"
             min="0"
             max="120"
           />
           <p className="text-xs text-muted-foreground mt-1">
-            I=Hielo(120), K=Cuchillo(100), P=Lápiz(50), 1F=1Dedo(25), 4F=4Dedos(10), F=Puño(2)
+            {t.samples.hardnessHint}
           </p>
         </div>
 
@@ -136,7 +138,7 @@ export function SampleForm({
         <div>
           <label className="nivo-field-label flex items-center gap-2">
             <Snowflake className="w-4 h-4" />
-            Tipo de Grano *
+            {t.samples.grainType} *
           </label>
           <select
             className="nivo-select"
@@ -144,7 +146,7 @@ export function SampleForm({
             onChange={(e) => setGrainType(e.target.value ? parseInt(e.target.value) : null)}
             required
           >
-            <option value="">Seleccionar tipo...</option>
+            <option value="">{t.samples.grainTypeSelect}</option>
             {GRAIN_TYPES.map((g) => (
               <option key={g.value} value={g.value}>
                 {g.value} - {g.label}: {g.name}
@@ -156,7 +158,7 @@ export function SampleForm({
         {/* Diameter - Optional */}
         <div>
           <label className="nivo-field-label">
-            Diámetro del grano (mm)
+            {t.samples.grainSize}
           </label>
           <input
             type="number"
@@ -173,7 +175,7 @@ export function SampleForm({
         <div>
           <label className="nivo-field-label flex items-center gap-2">
             <Droplets className="w-4 h-4" />
-            Humedad
+            {t.samples.humidity}
           </label>
           <div className="grid grid-cols-5 gap-2">
             {HUMIDITY_VALUES.map((h) => (
@@ -189,7 +191,7 @@ export function SampleForm({
             ))}
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            D=Seca, M=Húmeda, W=Mojada, V=Muy mojada, S=Empapada
+            {t.samples.humidityHint}
           </p>
         </div>
 
@@ -201,7 +203,7 @@ export function SampleForm({
             className="nivo-btn-success"
           >
             <Plus className="w-5 h-5" />
-            Siguiente Muestra
+            {t.samples.nextSample}
           </button>
           <button
             type="button"
@@ -210,7 +212,7 @@ export function SampleForm({
             disabled={sampleNumber === 1}
           >
             <Check className="w-5 h-5" />
-            Finalizar Perfil
+            {t.samples.finishProfile}
           </button>
         </div>
       </form>

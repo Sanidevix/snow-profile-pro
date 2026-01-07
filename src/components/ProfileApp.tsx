@@ -222,6 +222,7 @@ export function ProfileApp() {
                 <ChevronLeft className="w-6 h-6" />
               </button>
             )}
+            <img src="/pwa-512x512.png" alt="SnowStrat Field" className="w-10 h-10 rounded-lg" />
             <div>
               <h1 className="text-xl font-bold">{t.app.title}</h1>
               <p className="text-xs opacity-80">{t.app.subtitle}</p>
