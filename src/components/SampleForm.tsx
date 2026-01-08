@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Check, Thermometer, Ruler, Droplets, Snowflake } from 'lucide-react';
+import { Plus, Check, Thermometer, Ruler, Droplets, Snowflake, Minus } from 'lucide-react';
 import { SnowSample, RESISTANCE_VALUES, GRAIN_TYPES, HUMIDITY_VALUES } from '@/lib/db';
 import { useI18n } from '@/i18n/context';
 
@@ -85,21 +85,45 @@ export function SampleForm({
           </p>
         </div>
 
-        {/* Temperature - Optional */}
+        {/* Temperature - Optional with stepper buttons */}
         <div>
           <label className="nivo-field-label flex items-center gap-2">
             <Thermometer className="w-4 h-4" />
             {t.samples.temperature}
           </label>
-          <input
-            type="number"
-            className="nivo-input"
-            value={temperature}
-            onChange={(e) => setTemperature(e.target.value)}
-            placeholder="Ej: -5.2"
-            step="0.1"
-            max="0"
-          />
+          <div className="flex items-center">
+            <button
+              type="button"
+              onClick={() => {
+                const current = temperature ? parseFloat(temperature) : 0.0;
+                setTemperature((current - 0.1).toFixed(1));
+              }}
+              className="nivo-stepper-btn rounded-l-lg border-r-0"
+              aria-label="Decrementar temperatura"
+            >
+              <Minus className="w-5 h-5" />
+            </button>
+            <input
+              type="number"
+              className="nivo-input rounded-none border-x-0 text-center flex-1"
+              value={temperature}
+              onChange={(e) => setTemperature(e.target.value)}
+              placeholder="0.0"
+              step="0.1"
+              max="0"
+            />
+            <button
+              type="button"
+              onClick={() => {
+                const current = temperature ? parseFloat(temperature) : 0.0;
+                setTemperature((current + 0.1).toFixed(1));
+              }}
+              className="nivo-stepper-btn rounded-r-lg border-l-0"
+              aria-label="Incrementar temperatura"
+            >
+              <Plus className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Resistance - Required with quick buttons */}
