@@ -45,6 +45,10 @@ export const fr: Translation = {
     layerAdded: 'Couche de {height}cm ajoutée',
     totalHeight: 'Hauteur totale',
     accumulatedHeight: 'Hauteur accumulée',
+    confirmFinishTitle: 'Terminer le profil ?',
+    confirmFinishMessage: 'Êtes-vous sûr de vouloir terminer le profil ? Une fois terminé, le graphique et le fichier d\'exportation seront générés.',
+    cancel: 'Annuler',
+    confirm: 'Confirmer',
   },
   results: {
     preview: 'Aperçu',

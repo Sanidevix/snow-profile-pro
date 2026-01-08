@@ -45,6 +45,10 @@ export const en: Translation = {
     layerAdded: '{height}cm layer added',
     totalHeight: 'Total height',
     accumulatedHeight: 'Accumulated height',
+    confirmFinishTitle: 'Finish profile?',
+    confirmFinishMessage: 'Are you sure you want to finish the profile? Once finished, the chart and export file will be generated.',
+    cancel: 'Cancel',
+    confirm: 'Confirm',
   },
   results: {
     preview: 'Preview',

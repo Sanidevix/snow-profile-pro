@@ -61,6 +61,10 @@ export interface Translation {
     layerAdded: string;
     totalHeight: string;
     accumulatedHeight: string;
+    confirmFinishTitle: string;
+    confirmFinishMessage: string;
+    cancel: string;
+    confirm: string;
   };
   
   // Results

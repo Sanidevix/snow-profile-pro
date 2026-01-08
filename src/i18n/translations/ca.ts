@@ -45,6 +45,10 @@ export const ca: Translation = {
     layerAdded: 'Capa de {height}cm afegida',
     totalHeight: 'Alçada total',
     accumulatedHeight: 'Alçada acumulada',
+    confirmFinishTitle: 'Finalitzar perfil?',
+    confirmFinishMessage: 'Estàs segur que vols finalitzar el perfil? Un cop finalitzat, es generarà el gràfic i l\'arxiu d\'exportació.',
+    cancel: 'Cancel·lar',
+    confirm: 'Confirmar',
   },
   results: {
     preview: 'Vista prèvia',

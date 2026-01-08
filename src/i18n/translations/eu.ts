@@ -45,6 +45,10 @@ export const eu: Translation = {
     layerAdded: '{height}cm-ko geruza gehituta',
     totalHeight: 'Altuera osoa',
     accumulatedHeight: 'Metatutako altuera',
+    confirmFinishTitle: 'Profila amaitu?',
+    confirmFinishMessage: 'Ziur zaude profila amaitu nahi duzula? Amaitutakoan, grafikoa eta esportazio fitxategia sortuko dira.',
+    cancel: 'Utzi',
+    confirm: 'Berretsi',
   },
   results: {
     preview: 'Aurrebista',
