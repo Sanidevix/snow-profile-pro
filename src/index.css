@@ -234,6 +234,12 @@
     @apply bg-primary text-primary-foreground border-primary;
   }
 
+  .nivo-stepper-btn {
+    @apply flex items-center justify-center w-14 h-[48px] bg-muted border-2 border-input;
+    @apply text-foreground font-bold transition-all active:scale-95;
+    @apply hover:bg-primary hover:text-primary-foreground hover:border-primary;
+  }
+
   .nivo-data-display {
     @apply font-mono text-xl font-bold tracking-tight;
   }
