@@ -11,7 +11,7 @@ export const es: Translation = {
   header: {
     newProfile: 'Nuevo Perfil Estratigráfico',
     profileName: 'Nombre del Perfil',
-    profileNamePlaceholder: 'Ej: Test Portalet Norte',
+    profileNamePlaceholder: 'Ej: Portalet Norte',
     observer: 'Observador',
     observerPlaceholder: 'Ej: J. García',
     observations: 'Observaciones',
