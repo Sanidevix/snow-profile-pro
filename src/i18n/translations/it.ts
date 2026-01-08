@@ -45,6 +45,10 @@ export const it: Translation = {
     layerAdded: 'Strato di {height}cm aggiunto',
     totalHeight: 'Altezza totale',
     accumulatedHeight: 'Altezza accumulata',
+    confirmFinishTitle: 'Finire il profilo?',
+    confirmFinishMessage: 'Sei sicuro di voler finire il profilo? Una volta terminato, verranno generati il grafico e il file di esportazione.',
+    cancel: 'Annulla',
+    confirm: 'Conferma',
   },
   results: {
     preview: 'Anteprima',

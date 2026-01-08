@@ -45,6 +45,10 @@ export const gl: Translation = {
     layerAdded: 'Capa de {height}cm engadida',
     totalHeight: 'Altura total',
     accumulatedHeight: 'Altura acumulada',
+    confirmFinishTitle: 'Finalizar perfil?',
+    confirmFinishMessage: 'Estás seguro de que queres finalizar o perfil? Unha vez finalizado, xerarase o gráfico e o arquivo de exportación.',
+    cancel: 'Cancelar',
+    confirm: 'Confirmar',
   },
   results: {
     preview: 'Vista previa',

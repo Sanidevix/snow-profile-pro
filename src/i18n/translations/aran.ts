@@ -45,6 +45,10 @@ export const aran: Translation = {
     layerAdded: 'Capa de {height}cm ahigida',
     totalHeight: 'Hautor totau',
     accumulatedHeight: 'Hautor acumulada',
+    confirmFinishTitle: 'Acabar perfil?',
+    confirmFinishMessage: 'Ès segur que vòs acabar eth perfil? Un còp acabat, se generarà eth grafic e ethòarchiu d\'exportacion.',
+    cancel: 'Anullar',
+    confirm: 'Confirmar',
   },
   results: {
     preview: 'Vista prèvia',

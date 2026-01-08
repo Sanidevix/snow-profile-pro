@@ -45,6 +45,10 @@ export const ast: Translation = {
     layerAdded: 'Capa de {height}cm amestada',
     totalHeight: 'Altor total',
     accumulatedHeight: 'Altor acumuláu',
+    confirmFinishTitle: 'Finar perfil?',
+    confirmFinishMessage: '¿Tas seguru de que quies finar el perfil? Una vegada fináu, xenérase\'l gráficu y l\'archivu d\'esportación.',
+    cancel: 'Encaboxar',
+    confirm: 'Confirmar',
   },
   results: {
     preview: 'Vista previa',
