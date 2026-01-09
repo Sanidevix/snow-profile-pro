@@ -38,6 +38,7 @@ export const aran: Translation = {
     humidity: 'Umiditat',
     humidityHint: 'S=Sec, H=Umid, M=Molhat, MM=Fòrça molhat, E=Ensopat',
     temperature: 'Temperatura (°C)',
+    temperatureError: 'Era temperatura dera nhèu non pòt superar es 0°C',
     addSample: 'Ahíger Mòstra',
     nextSample: 'Seguenta Mòstra',
     finishProfile: 'Acabar Perfil',

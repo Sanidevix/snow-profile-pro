@@ -38,6 +38,7 @@ export const de: Translation = {
     humidity: 'Feuchtigkeit',
     humidityHint: 'T=Trocken, F=Feucht, N=Nass, SN=Sehr nass, D=Durchnässt',
     temperature: 'Temperatur (°C)',
+    temperatureError: 'Die Schneetemperatur darf 0°C nicht überschreiten',
     addSample: 'Probe Hinzufügen',
     nextSample: 'Nächste Probe',
     finishProfile: 'Profil Beenden',
