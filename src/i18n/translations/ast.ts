@@ -38,6 +38,7 @@ export const ast: Translation = {
     humidity: 'Humedá',
     humidityHint: 'S=Secu, H=Húmedu, M=Moyáu, MM=Mui moyáu, E=Empapáu',
     temperature: 'Temperatura (°C)',
+    temperatureError: 'La temperatura de la ñeve nun pue pasar de 0°C',
     addSample: 'Amestar Muestra',
     nextSample: 'Siguiente Muestra',
     finishProfile: 'Finar Perfil',

@@ -38,6 +38,7 @@ export const it: Translation = {
     humidity: 'Umidità',
     humidityHint: 'S=Secco, U=Umido, B=Bagnato, MB=Molto bagnato, F=Fradicio',
     temperature: 'Temperatura (°C)',
+    temperatureError: 'La temperatura della neve non può superare 0°C',
     addSample: 'Aggiungi Campione',
     nextSample: 'Campione Successivo',
     finishProfile: 'Termina Profilo',

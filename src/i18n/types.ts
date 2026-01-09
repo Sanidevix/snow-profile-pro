@@ -54,6 +54,7 @@ export interface Translation {
     humidity: string;
     humidityHint: string;
     temperature: string;
+    temperatureError: string;
     addSample: string;
     nextSample: string;
     finishProfile: string;

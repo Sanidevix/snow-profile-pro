@@ -38,6 +38,7 @@ export const es: Translation = {
     humidity: 'Humedad',
     humidityHint: 'D=Seca, M=Húmeda, W=Mojada, V=Muy mojada, S=Empapada',
     temperature: 'Temperatura (°C)',
+    temperatureError: 'La temperatura de la nieve no puede superar los 0°C',
     addSample: 'Añadir Muestra',
     nextSample: 'Siguiente Muestra',
     finishProfile: 'Finalizar Perfil',

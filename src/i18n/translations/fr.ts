@@ -38,6 +38,7 @@ export const fr: Translation = {
     humidity: 'Humidité',
     humidityHint: 'S=Sec, H=Humide, M=Mouillé, MM=Très mouillé, E=Trempé',
     temperature: 'Température (°C)',
+    temperatureError: 'La température de la neige ne peut pas dépasser 0°C',
     addSample: 'Ajouter Échantillon',
     nextSample: 'Échantillon Suivant',
     finishProfile: 'Terminer le Profil',

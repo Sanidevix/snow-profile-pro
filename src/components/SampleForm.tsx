@@ -105,7 +105,7 @@ export function SampleForm({
           </p>
         </div>
 
-        {/* Temperature - Optional with stepper buttons */}
+        {/* Temperature - Optional with stepper buttons (max 0°C) */}
         <div>
           <label className="nivo-field-label flex items-center gap-2">
             <Thermometer className="w-4 h-4" />
@@ -127,7 +127,31 @@ export function SampleForm({
               type="number"
               className="nivo-input rounded-none border-x-0 text-center flex-1"
               value={temperature}
-              onChange={(e) => setTemperature(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === '' || value === '-') {
+                  setTemperature(value);
+                } else {
+                  const numValue = parseFloat(value);
+                  if (!isNaN(numValue)) {
+                    // Clamp to max 0.0
+                    if (numValue > 0) {
+                      setTemperature('0.0');
+                    } else {
+                      setTemperature(value);
+                    }
+                  }
+                }
+              }}
+              onBlur={() => {
+                // On blur, ensure valid value
+                if (temperature && temperature !== '-') {
+                  const numValue = parseFloat(temperature);
+                  if (!isNaN(numValue) && numValue > 0) {
+                    setTemperature('0.0');
+                  }
+                }
+              }}
               placeholder="0.0"
               step="0.1"
               max="0"
@@ -136,14 +160,24 @@ export function SampleForm({
               type="button"
               onClick={() => {
                 const current = temperature ? parseFloat(temperature) : 0.0;
-                setTemperature((current + 0.1).toFixed(1));
+                const newValue = current + 0.1;
+                // Cannot exceed 0.0
+                if (newValue <= 0) {
+                  setTemperature(newValue.toFixed(1));
+                }
               }}
-              className="nivo-stepper-btn rounded-r-lg border-l-0"
+              disabled={temperature === '' || temperature === '0.0' || temperature === '0' || (temperature !== '' && parseFloat(temperature) >= 0)}
+              className="nivo-stepper-btn rounded-r-lg border-l-0 disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Incrementar temperatura"
             >
               <Plus className="w-5 h-5" />
             </button>
           </div>
+          {temperature && parseFloat(temperature) > 0 && (
+            <p className="text-xs text-destructive mt-1 font-medium">
+              {t.samples.temperatureError || 'La temperatura de la nieve no puede superar los 0°C'}
+            </p>
+          )}
         </div>
 
         {/* Resistance - Required with quick buttons */}

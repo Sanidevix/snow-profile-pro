@@ -38,6 +38,7 @@ export const en: Translation = {
     humidity: 'Humidity',
     humidityHint: 'D=Dry, M=Moist, W=Wet, V=Very wet, S=Soaked',
     temperature: 'Temperature (°C)',
+    temperatureError: 'Snow temperature cannot exceed 0°C',
     addSample: 'Add Sample',
     nextSample: 'Next Sample',
     finishProfile: 'Finish Profile',

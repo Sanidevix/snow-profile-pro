@@ -39,6 +39,7 @@ export const and: Translation = {
     humidity: 'Humitat',
     humidityHint: 'S=Sec, H=Humit, M=Mullat, MM=Molt mullat, E=Xop',
     temperature: 'Temperatura (°C)',
+    temperatureError: 'La temperatura de la neu no pot superar els 0°C',
     addSample: 'Afegir Mostra',
     nextSample: 'Següent Mostra',
     finishProfile: 'Finalitzar Perfil',

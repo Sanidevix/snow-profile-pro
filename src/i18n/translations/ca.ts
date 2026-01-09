@@ -38,6 +38,7 @@ export const ca: Translation = {
     humidity: 'Humitat',
     humidityHint: 'Contingut d\'aigua líquida',
     temperature: 'Temperatura (°C)',
+    temperatureError: 'La temperatura de la neu no pot superar els 0°C',
     addSample: 'Afegir Mostra',
     nextSample: 'Següent Mostra',
     finishProfile: 'Finalitzar Perfil',

@@ -38,6 +38,7 @@ export const eu: Translation = {
     humidity: 'Hezetasuna',
     humidityHint: 'L=Lehorra, H=Hezea, B=Bustia, BB=Oso bustia, BL=Blai',
     temperature: 'Tenperatura (°C)',
+    temperatureError: 'Elurraren tenperaturak ezin du 0°C gainditu',
     addSample: 'Lagina Gehitu',
     nextSample: 'Hurrengo Lagina',
     finishProfile: 'Profila Amaitu',

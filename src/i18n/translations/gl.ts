@@ -38,6 +38,7 @@ export const gl: Translation = {
     humidity: 'Humidade',
     humidityHint: 'Contido de auga líquida',
     temperature: 'Temperatura (°C)',
+    temperatureError: 'A temperatura da neve non pode superar os 0°C',
     addSample: 'Engadir Mostra',
     nextSample: 'Seguinte Mostra',
     finishProfile: 'Finalizar Perfil',
