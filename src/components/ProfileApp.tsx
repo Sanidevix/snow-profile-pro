@@ -196,15 +196,13 @@ export function ProfileApp() {
   }, []);
 
   const handleReset = useCallback(() => {
-    if (window.confirm(t.profile.confirmReset)) {
-      setAppState('header');
-      setProfileName('');
-      setObserver('');
-      setObservations('');
-      setSamples([]);
-      setFrozenData(null);
-    }
-  }, [t]);
+    setAppState('header');
+    setProfileName('');
+    setObserver('');
+    setObservations('');
+    setSamples([]);
+    setFrozenData(null);
+  }, []);
 
   const totalHeight = samples.reduce((sum, s) => sum + s.height, 0);
 
