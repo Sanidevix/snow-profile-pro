@@ -84,22 +84,81 @@ export function SampleForm({
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Height - Required */}
+        {/* Height - Required with stepper buttons (range 1-200) */}
         <div>
           <label className="nivo-field-label flex items-center gap-2">
             <Ruler className="w-4 h-4" />
             {t.samples.layerHeight} *
           </label>
-          <input
-            type="number"
-            className="nivo-input"
-            value={height}
-            onChange={(e) => setHeight(e.target.value)}
-            placeholder="Ej: 10"
-            min="0.1"
-            step="0.1"
-            required
-          />
+          <div className="flex items-stretch">
+            <button
+              type="button"
+              onClick={() => {
+                const current = height ? parseFloat(height) : 1;
+                if (current > 1) {
+                  setHeight(String(current - 1));
+                }
+              }}
+              disabled={!height || parseFloat(height) <= 1}
+              className="nivo-stepper-btn rounded-l-lg border-r-0 disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Decrementar altura"
+            >
+              <Minus className="w-5 h-5" />
+            </button>
+            <input
+              type="number"
+              className="nivo-input rounded-none border-x-0 text-center flex-1 min-w-0"
+              value={height}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === '') {
+                  setHeight(value);
+                } else {
+                  const numValue = parseFloat(value);
+                  if (!isNaN(numValue)) {
+                    if (numValue < 1) {
+                      setHeight('1');
+                    } else if (numValue > 200) {
+                      setHeight('200');
+                    } else {
+                      setHeight(value);
+                    }
+                  }
+                }
+              }}
+              onBlur={() => {
+                if (height) {
+                  const numValue = parseFloat(height);
+                  if (!isNaN(numValue)) {
+                    if (numValue < 1) {
+                      setHeight('1');
+                    } else if (numValue > 200) {
+                      setHeight('200');
+                    }
+                  }
+                }
+              }}
+              placeholder="Ej: 10"
+              min="1"
+              max="200"
+              step="1"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => {
+                const current = height ? parseFloat(height) : 0;
+                if (current < 200) {
+                  setHeight(String(current + 1));
+                }
+              }}
+              disabled={height !== '' && parseFloat(height) >= 200}
+              className="nivo-stepper-btn rounded-r-lg border-l-0 disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Incrementar altura"
+            >
+              <Plus className="w-5 h-5" />
+            </button>
+          </div>
           <p className="text-xs text-muted-foreground mt-1">
             {t.samples.layerHeightHint}
           </p>
@@ -111,7 +170,7 @@ export function SampleForm({
             <Thermometer className="w-4 h-4" />
             {t.samples.temperature}
           </label>
-          <div className="flex items-center">
+          <div className="flex items-stretch">
             <button
               type="button"
               onClick={() => {
@@ -125,7 +184,7 @@ export function SampleForm({
             </button>
             <input
               type="number"
-              className="nivo-input rounded-none border-x-0 text-center flex-1"
+              className="nivo-input rounded-none border-x-0 text-center flex-1 min-w-0"
               value={temperature}
               onChange={(e) => {
                 const value = e.target.value;
@@ -134,7 +193,6 @@ export function SampleForm({
                 } else {
                   const numValue = parseFloat(value);
                   if (!isNaN(numValue)) {
-                    // Clamp to max 0.0
                     if (numValue > 0) {
                       setTemperature('0.0');
                     } else {
@@ -144,7 +202,6 @@ export function SampleForm({
                 }
               }}
               onBlur={() => {
-                // On blur, ensure valid value
                 if (temperature && temperature !== '-') {
                   const numValue = parseFloat(temperature);
                   if (!isNaN(numValue) && numValue > 0) {
@@ -161,7 +218,6 @@ export function SampleForm({
               onClick={() => {
                 const current = temperature ? parseFloat(temperature) : 0.0;
                 const newValue = current + 0.1;
-                // Cannot exceed 0.0
                 if (newValue <= 0) {
                   setTemperature(newValue.toFixed(1));
                 }

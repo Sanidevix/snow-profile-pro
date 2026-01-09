@@ -235,7 +235,7 @@
   }
 
   .nivo-stepper-btn {
-    @apply flex items-center justify-center w-14 h-[48px] bg-muted border-2 border-input;
+    @apply flex items-center justify-center w-14 bg-muted border-2 border-input;
     @apply text-foreground font-bold transition-all active:scale-95;
     @apply hover:bg-primary hover:text-primary-foreground hover:border-primary;
   }
