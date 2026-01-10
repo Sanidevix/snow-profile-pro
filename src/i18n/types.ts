@@ -39,6 +39,15 @@ export interface Translation {
     gpsSearching: string;
     gpsError: string;
   };
+
+  // Test type selection (optional - not all languages have this yet)
+  testType?: {
+    selectTest: string;
+    stratigraphicProfile: string;
+    stratigraphicProfileDesc: string;
+    compressionTest: string;
+    compressionTestDesc: string;
+  };
   
   // Sample form
   samples: {
@@ -66,6 +75,41 @@ export interface Translation {
     confirmFinishMessage: string;
     cancel: string;
     confirm: string;
+  };
+
+  // Compression Test (CT) form (optional - not all languages have this yet)
+  compressionTest?: {
+    newSample: string;
+    sampleNumber: string;
+    tapNumber: string;
+    tapNumberHint: string;
+    layerDepth: string;
+    layerDepthHint: string;
+    fractureQuality: string;
+    fractureQualityHint: string;
+    fractureQ1: string;
+    fractureQ2: string;
+    fractureQ3: string;
+    grainType: string;
+    grainTypeSelect: string;
+    grainDiameter: string;
+    grainDiameterHint: string;
+    additionalInfo: string;
+    additionalInfoPlaceholder: string;
+    addSample: string;
+    nextSample: string;
+    finishTest: string;
+    sampleRegistered: string;
+    layerAdded: string;
+    confirmFinishTitle: string;
+    confirmFinishMessage: string;
+    cancel: string;
+    confirm: string;
+    scoreVeryEasy: string;
+    scoreEasy: string;
+    scoreMedium: string;
+    scoreHard: string;
+    scoreNoFracture: string;
   };
   
   // Results
@@ -109,6 +153,21 @@ export interface Translation {
     moveDown: string;
     confirm: string;
     cancel: string;
+  };
+
+  // CT Table (optional - not all languages have this yet)
+  ctTable?: {
+    sample: string;
+    result: string;
+    taps: string;
+    depth: string;
+    quality: string;
+    grain: string;
+    size: string;
+    info: string;
+    actions: string;
+    noSamples: string;
+    sampleDetails: string;
   };
   
   // Profile manager
