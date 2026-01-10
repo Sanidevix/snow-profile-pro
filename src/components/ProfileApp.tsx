@@ -7,20 +7,27 @@ import { SampleTable } from './SampleTable';
 import { ProfileManager } from './ProfileManager';
 import { LanguageSelector } from './LanguageSelector';
 import { Documentation } from './Documentation';
-import { SnowSample, SnowProfile, saveProfile, downloadCSV, downloadGeoJSON, parseGeoJSON } from '@/lib/db';
+import { TestTypeSelector, TestType } from './TestTypeSelector';
+import { CTSampleForm } from './CTSampleForm';
+import { CTSampleTable } from './CTSampleTable';
+import { SnowSample, SnowProfile, saveProfile, downloadCSV, downloadGeoJSON, parseGeoJSON, GRAIN_TYPES } from '@/lib/db';
+import { CTSample, formatCTResult } from '@/lib/ctTypes';
 import { getISOTimestamp } from '@/hooks/useCurrentTime';
 import { toast } from '@/hooks/use-toast';
 import { useI18n } from '@/i18n/context';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-type AppState = 'header' | 'sampling' | 'results';
+type AppState = 'header' | 'testSelection' | 'sampling' | 'results';
 
 export function ProfileApp() {
   const { t } = useI18n();
   const [appState, setAppState] = useState<AppState>('header');
+  const [testType, setTestType] = useState<TestType>('stratigraphic');
   const [profileName, setProfileName] = useState('');
   const [observer, setObserver] = useState('');
   const [observations, setObservations] = useState('');
   const [samples, setSamples] = useState<SnowSample[]>([]);
+  const [ctSamples, setCTSamples] = useState<CTSample[]>([]);
   const [frozenData, setFrozenData] = useState<{
     latitude: number | null;
     longitude: number | null;
@@ -30,6 +37,7 @@ export function ProfileApp() {
   const [showChart, setShowChart] = useState(true);
   const [showProfileManager, setShowProfileManager] = useState(false);
   const [showDocumentation, setShowDocumentation] = useState(false);
+  const [activeTab, setActiveTab] = useState<'stratigraphic' | 'compression'>('stratigraphic');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleStartProfile = useCallback(() => {
@@ -53,9 +61,15 @@ export function ProfileApp() {
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );
-    setAppState('sampling');
+    setAppState('testSelection');
     toast({ title: t.profile.started, description: t.profile.gpsTimeFixed });
   }, [t]);
+
+  const handleTestTypeSelect = useCallback((type: TestType) => {
+    setTestType(type);
+    setActiveTab(type === 'stratigraphic' ? 'stratigraphic' : 'compression');
+    setAppState('sampling');
+  }, []);
 
   const handleAddSample = useCallback((sample: Omit<SnowSample, 'id'>) => {
     const newSample: SnowSample = {
@@ -70,16 +84,36 @@ export function ProfileApp() {
     });
   }, [samples.length, t]);
 
+  const handleAddCTSample = useCallback((sample: Omit<CTSample, 'id'>) => {
+    const newSample: CTSample = {
+      ...sample,
+      id: ctSamples.length + 1,
+      timestamp: getISOTimestamp(new Date()),
+    };
+    setCTSamples(prev => [...prev, newSample]);
+    const ct = t.compressionTest;
+    toast({
+      title: `${ct?.sampleRegistered || 'Muestra CT registrada'} #${newSample.id}`,
+      description: (ct?.layerAdded || 'Fractura a {depth}cm añadida').replace('{depth}', String(sample.depth)),
+    });
+  }, [ctSamples.length, t]);
+
   const handleFinishProfile = useCallback(() => {
     setAppState('results');
+    const totalSamples = samples.length + ctSamples.length;
     toast({
       title: t.results.profileFinished,
-      description: t.results.samplesRegistered.replace('{count}', String(samples.length)),
+      description: t.results.samplesRegistered.replace('{count}', String(totalSamples)),
     });
-  }, [samples.length, t]);
+  }, [samples.length, ctSamples.length, t]);
 
   const handleDeleteSample = useCallback((index: number) => {
     setSamples(prev => prev.filter((_, i) => i !== index).map((s, i) => ({ ...s, id: i + 1 })));
+    toast({ title: t.table.deleted });
+  }, [t]);
+
+  const handleDeleteCTSample = useCallback((index: number) => {
+    setCTSamples(prev => prev.filter((_, i) => i !== index).map((s, i) => ({ ...s, id: i + 1 })));
     toast({ title: t.table.deleted });
   }, [t]);
 
@@ -96,7 +130,10 @@ export function ProfileApp() {
     });
   }, [t]);
 
-  const buildProfile = useCallback((): SnowProfile => {
+  const getGrainLabel = (value: number) => 
+    GRAIN_TYPES.find(g => g.value === value)?.label ?? value.toString();
+
+  const buildProfile = useCallback((): SnowProfile & { ctSamples?: any[] } => {
     return {
       id: 0,
       name: profileName,
@@ -107,10 +144,23 @@ export function ProfileApp() {
       altitude: frozenData?.altitude ?? null,
       timestamp: frozenData?.timestamp ?? getISOTimestamp(new Date()),
       samples,
+      ctSamples: ctSamples.length > 0 ? ctSamples.map((sample, index) => ({
+        id: sample.id,
+        number: index + 1,
+        taps: sample.taps,
+        depth: sample.depth,
+        fractureQuality: sample.fractureQuality,
+        grainType: sample.grainType,
+        grainTypeLabel: getGrainLabel(sample.grainType),
+        diameter: sample.diameter,
+        additionalInfo: sample.additionalInfo,
+        formattedResult: formatCTResult(sample, getGrainLabel(sample.grainType)),
+        timestamp: sample.timestamp,
+      })) : undefined,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-  }, [profileName, observer, observations, frozenData, samples]);
+  }, [profileName, observer, observations, frozenData, samples, ctSamples]);
 
   const handleSaveProfile = useCallback(async () => {
     try {
@@ -139,9 +189,71 @@ export function ProfileApp() {
 
   const handleExportGeoJSON = useCallback(() => {
     const profile = buildProfile();
-    downloadGeoJSON(profile);
+    // Extended GeoJSON export that includes CT samples
+    const feature = {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [
+          profile.longitude ?? 0, 
+          profile.latitude ?? 0, 
+          profile.altitude ?? 0
+        ]
+      },
+      properties: {
+        name: profile.name,
+        observer: profile.observer,
+        observations: profile.observations || '',
+        timestamp: profile.timestamp,
+        createdAt: profile.createdAt,
+        updatedAt: profile.updatedAt,
+        totalHeight: profile.samples.reduce((sum, s) => sum + s.height, 0),
+        sampleCount: profile.samples.length,
+        samples: profile.samples.map((sample, index) => ({
+          id: sample.id,
+          number: index + 1,
+          height: sample.height,
+          temperature: sample.temperature,
+          resistance: sample.resistance,
+          grainType: sample.grainType,
+          grainTypeLabel: GRAIN_TYPES.find(g => g.value === sample.grainType)?.label ?? null,
+          diameter: sample.diameter,
+          humidity: sample.humidity,
+          timestamp: sample.timestamp,
+        })),
+        ctSampleCount: ctSamples.length,
+        ctSamples: ctSamples.length > 0 ? ctSamples.map((sample, index) => ({
+          id: sample.id,
+          number: index + 1,
+          taps: sample.taps,
+          depth: sample.depth,
+          fractureQuality: sample.fractureQuality,
+          grainType: sample.grainType,
+          grainTypeLabel: getGrainLabel(sample.grainType),
+          diameter: sample.diameter,
+          additionalInfo: sample.additionalInfo,
+          formattedResult: formatCTResult(sample, getGrainLabel(sample.grainType)),
+          timestamp: sample.timestamp,
+        })) : undefined,
+      }
+    };
+
+    const geojson = JSON.stringify(feature, null, 2);
+    const blob = new Blob([geojson], { type: 'application/geo+json;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const filename = `perfil_nivo_${profile.name.replace(/\s+/g, '_')}_${new Date(profile.timestamp).toISOString().split('T')[0]}.geojson`;
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
     toast({ title: t.results.geojsonExported, description: t.results.downloading });
-  }, [buildProfile, t]);
+  }, [buildProfile, ctSamples, t]);
 
   const handleImportGeoJSON = useCallback(() => {
     fileInputRef.current?.click();
@@ -201,10 +313,14 @@ export function ProfileApp() {
     setObserver('');
     setObservations('');
     setSamples([]);
+    setCTSamples([]);
     setFrozenData(null);
+    setTestType('stratigraphic');
+    setActiveTab('stratigraphic');
   }, []);
 
   const totalHeight = samples.reduce((sum, s) => sum + s.height, 0);
+  const hasSamples = samples.length > 0 || ctSamples.length > 0;
 
   return (
     <div className="min-h-screen bg-background">
@@ -216,7 +332,18 @@ export function ProfileApp() {
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             {appState !== 'header' && (
-              <button onClick={appState === 'results' ? () => setAppState('sampling') : handleReset} className="p-2 hover:bg-primary-foreground/10 rounded-lg transition-colors">
+              <button 
+                onClick={() => {
+                  if (appState === 'results') {
+                    setAppState('sampling');
+                  } else if (appState === 'sampling') {
+                    setAppState('testSelection');
+                  } else if (appState === 'testSelection') {
+                    handleReset();
+                  }
+                }} 
+                className="p-2 hover:bg-primary-foreground/10 rounded-lg transition-colors"
+              >
                 <ChevronLeft className="w-6 h-6" />
               </button>
             )}
@@ -253,28 +380,81 @@ export function ProfileApp() {
       <main className="nivo-container pb-8 space-y-6">
         <ProfileHeader profileName={profileName} setProfileName={setProfileName} observer={observer} setObserver={setObserver} observations={observations} setObservations={setObservations} onStartProfile={handleStartProfile} isStarted={appState !== 'header'} frozenData={frozenData} />
 
-        {appState === 'sampling' && (
-          <SampleForm sampleNumber={samples.length + 1} onAddSample={handleAddSample} onFinishProfile={handleFinishProfile} totalHeight={totalHeight} />
+        {appState === 'testSelection' && (
+          <TestTypeSelector selectedType={testType} onTypeChange={handleTestTypeSelect} />
         )}
 
-        {appState === 'sampling' && samples.length > 0 && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-lg">{t.results.preview}</h3>
-              <button onClick={() => setShowChart(!showChart)} className="nivo-btn-outline text-sm py-2 px-4">
-                <Eye className="w-4 h-4" />
-                {showChart ? t.results.hideChart : t.results.showChart}
-              </button>
-            </div>
-            {showChart && <StratigraphicChart samples={samples} />}
-            <SampleTable samples={samples} onDeleteSample={handleDeleteSample} onReorderSample={handleReorderSample} />
+        {appState === 'sampling' && (
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'stratigraphic' | 'compression')} className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-4">
+              <TabsTrigger value="stratigraphic" className="flex items-center gap-2">
+                {t.testType?.stratigraphicProfile || 'Perfil Estratigráfico'}
+                {samples.length > 0 && (
+                  <span className="bg-primary/20 text-primary px-2 py-0.5 rounded-full text-xs font-bold">
+                    {samples.length}
+                  </span>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="compression" className="flex items-center gap-2">
+                {t.testType?.compressionTest || 'Test CT'}
+                {ctSamples.length > 0 && (
+                  <span className="bg-primary/20 text-primary px-2 py-0.5 rounded-full text-xs font-bold">
+                    {ctSamples.length}
+                  </span>
+                )}
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="stratigraphic" className="space-y-6">
+              <SampleForm sampleNumber={samples.length + 1} onAddSample={handleAddSample} onFinishProfile={handleFinishProfile} totalHeight={totalHeight} />
+              
+              {samples.length > 0 && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-bold text-lg">{t.results.preview}</h3>
+                    <button onClick={() => setShowChart(!showChart)} className="nivo-btn-outline text-sm py-2 px-4">
+                      <Eye className="w-4 h-4" />
+                      {showChart ? t.results.hideChart : t.results.showChart}
+                    </button>
+                  </div>
+                  {showChart && <StratigraphicChart samples={samples} />}
+                  <SampleTable samples={samples} onDeleteSample={handleDeleteSample} onReorderSample={handleReorderSample} />
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="compression" className="space-y-6">
+              <CTSampleForm sampleNumber={ctSamples.length + 1} onAddSample={handleAddCTSample} onFinishTest={handleFinishProfile} />
+              
+              {ctSamples.length > 0 && (
+                <CTSampleTable samples={ctSamples} onDeleteSample={handleDeleteCTSample} />
+              )}
+            </TabsContent>
+          </Tabs>
+        )}
+
+        {appState === 'sampling' && hasSamples && (
+          <div className="pt-4 border-t">
+            <button
+              onClick={handleFinishProfile}
+              className="nivo-btn-primary w-full"
+            >
+              {t.samples.finishProfile}
+            </button>
           </div>
         )}
 
         {appState === 'results' && (
           <div className="space-y-6">
-            <StratigraphicChart samples={samples} />
-            <SampleTable samples={samples} />
+            {samples.length > 0 && (
+              <>
+                <StratigraphicChart samples={samples} />
+                <SampleTable samples={samples} />
+              </>
+            )}
+            {ctSamples.length > 0 && (
+              <CTSampleTable samples={ctSamples} />
+            )}
             <div className="grid gap-4 sm:grid-cols-3">
               <button onClick={handleSaveProfile} className="nivo-btn-success"><Save className="w-5 h-5" />{t.results.save}</button>
               <button onClick={handleExportCSV} className="nivo-btn-primary"><Download className="w-5 h-5" />{t.results.exportCSV}</button>
