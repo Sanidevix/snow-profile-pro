@@ -1,29 +1,17 @@
 import React, { useState } from 'react';
-import { Plus, Check, Ruler, Snowflake, Minus, Info } from 'lucide-react';
+import { Plus, Ruler, Snowflake, Minus, Info } from 'lucide-react';
 import { CTSample, FRACTURE_QUALITY_OPTIONS } from '@/lib/ctTypes';
 import { GRAIN_TYPES } from '@/lib/db';
 import { useI18n } from '@/i18n/context';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 
 interface CTSampleFormProps {
   sampleNumber: number;
   onAddSample: (sample: Omit<CTSample, 'id'>) => void;
-  onFinishTest: () => void;
 }
 
 export function CTSampleForm({
   sampleNumber,
   onAddSample,
-  onFinishTest,
 }: CTSampleFormProps) {
   const { t } = useI18n();
   const ct = t.compressionTest;
@@ -34,16 +22,6 @@ export function CTSampleForm({
   const [grainType, setGrainType] = useState<number | null>(null);
   const [diameter, setDiameter] = useState<string>('');
   const [additionalInfo, setAdditionalInfo] = useState<string>('');
-  const [showFinishDialog, setShowFinishDialog] = useState(false);
-
-  const handleFinishClick = () => {
-    setShowFinishDialog(true);
-  };
-
-  const handleConfirmFinish = () => {
-    setShowFinishDialog(false);
-    onFinishTest();
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -297,43 +275,18 @@ export function CTSampleForm({
           />
         </div>
 
-        {/* Action buttons */}
-        <div className="grid gap-4 sm:grid-cols-2 pt-4">
+        {/* Action button */}
+        <div className="pt-4">
           <button
             type="submit"
             disabled={!isFormValid}
-            className="nivo-btn-success"
+            className="nivo-btn-success w-full"
           >
             <Plus className="w-5 h-5" />
             {ct?.nextSample || 'Siguiente Muestra'}
           </button>
-          <button
-            type="button"
-            onClick={handleFinishClick}
-            className="nivo-btn-primary"
-            disabled={sampleNumber === 1}
-          >
-            <Check className="w-5 h-5" />
-            {ct?.finishTest || 'Finalizar Test CT'}
-          </button>
         </div>
       </form>
-
-      <AlertDialog open={showFinishDialog} onOpenChange={setShowFinishDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{ct?.confirmFinishTitle || '¿Finalizar test CT?'}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {ct?.confirmFinishMessage || '¿Estás seguro de que deseas finalizar el test de compresión?'}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{ct?.cancel || 'Cancelar'}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmFinish}>
-              {ct?.confirm || 'Confirmar'}</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }

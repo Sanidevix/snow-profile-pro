@@ -99,6 +99,7 @@ export interface Translation {
     addSample: string;
     nextSample: string;
     finishTest: string;
+    finishSampling: string;
     sampleRegistered: string;
     layerAdded: string;
     confirmFinishTitle: string;

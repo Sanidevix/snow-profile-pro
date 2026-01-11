@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { Download, Eye, RotateCcw, Save, ChevronLeft, Upload, MapPin, FolderOpen, BookOpen } from 'lucide-react';
+import { Download, Eye, RotateCcw, Save, ChevronLeft, Upload, MapPin, FolderOpen, BookOpen, Check } from 'lucide-react';
 import { ProfileHeader } from './ProfileHeader';
 import { SampleForm } from './SampleForm';
 import { StratigraphicChart } from './StratigraphicChart';
@@ -16,6 +16,16 @@ import { getISOTimestamp } from '@/hooks/useCurrentTime';
 import { toast } from '@/hooks/use-toast';
 import { useI18n } from '@/i18n/context';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 type AppState = 'header' | 'testSelection' | 'sampling' | 'results';
 
@@ -38,6 +48,7 @@ export function ProfileApp() {
   const [showProfileManager, setShowProfileManager] = useState(false);
   const [showDocumentation, setShowDocumentation] = useState(false);
   const [activeTab, setActiveTab] = useState<'stratigraphic' | 'compression'>('stratigraphic');
+  const [showFinishDialog, setShowFinishDialog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleStartProfile = useCallback(() => {
@@ -406,7 +417,7 @@ export function ProfileApp() {
             </TabsList>
 
             <TabsContent value="stratigraphic" className="space-y-6">
-              <SampleForm sampleNumber={samples.length + 1} onAddSample={handleAddSample} onFinishProfile={handleFinishProfile} totalHeight={totalHeight} />
+              <SampleForm sampleNumber={samples.length + 1} onAddSample={handleAddSample} totalHeight={totalHeight} />
               
               {samples.length > 0 && (
                 <div className="space-y-4">
@@ -424,7 +435,7 @@ export function ProfileApp() {
             </TabsContent>
 
             <TabsContent value="compression" className="space-y-6">
-              <CTSampleForm sampleNumber={ctSamples.length + 1} onAddSample={handleAddCTSample} onFinishTest={handleFinishProfile} />
+              <CTSampleForm sampleNumber={ctSamples.length + 1} onAddSample={handleAddCTSample} />
               
               {ctSamples.length > 0 && (
                 <CTSampleTable samples={ctSamples} onDeleteSample={handleDeleteCTSample} />
@@ -434,15 +445,33 @@ export function ProfileApp() {
         )}
 
         {appState === 'sampling' && hasSamples && (
-          <div className="pt-4 border-t">
+          <div className="nivo-card">
             <button
-              onClick={handleFinishProfile}
+              onClick={() => setShowFinishDialog(true)}
               className="nivo-btn-primary w-full"
             >
-              {t.samples.finishProfile}
+              <Check className="w-5 h-5" />
+              {t.compressionTest?.finishSampling || 'Finalizar muestreo'}
             </button>
           </div>
         )}
+
+        <AlertDialog open={showFinishDialog} onOpenChange={setShowFinishDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t.samples.confirmFinishTitle}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t.samples.confirmFinishMessage}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t.samples.cancel}</AlertDialogCancel>
+              <AlertDialogAction onClick={() => { setShowFinishDialog(false); handleFinishProfile(); }}>
+                {t.samples.confirm}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {appState === 'results' && (
           <div className="space-y-6">
