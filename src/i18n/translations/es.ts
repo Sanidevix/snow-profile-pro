@@ -19,6 +19,8 @@ export const es: Translation = {
     coordinates: 'Coordenadas WGS84',
     altitude: 'Altitud',
     timeUTC: 'Hora UTC',
+    airTemperature: 'Temperatura del aire (°C)',
+    airTemperaturePlaceholder: 'Ej: -5.2',
     startSampling: 'Iniciar Toma de Muestras',
     gpsFixed: 'GPS Fijado',
     gpsActive: 'GPS Activo',

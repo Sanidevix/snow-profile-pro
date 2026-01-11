@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, Mountain, Clock, Loader2, FileText } from 'lucide-react';
+import { MapPin, Mountain, Clock, Loader2, FileText, Thermometer } from 'lucide-react';
 import { useGeolocation, formatAltitude } from '@/hooks/useGeolocation';
 import { useCurrentTime, formatTimeShortUTC, formatDateUTC } from '@/hooks/useCurrentTime';
 import { formatDecimalCoords, formatSexagesimalCoords } from '@/lib/db';
@@ -12,6 +12,8 @@ interface ProfileHeaderProps {
   setObserver: (observer: string) => void;
   observations: string;
   setObservations: (observations: string) => void;
+  temperature: string;
+  setTemperature: (temperature: string) => void;
   onStartProfile: () => void;
   isStarted: boolean;
   frozenData: {
@@ -29,6 +31,8 @@ export function ProfileHeader({
   setObserver,
   observations,
   setObservations,
+  temperature,
+  setTemperature,
   onStartProfile,
   isStarted,
   frozenData,
@@ -127,20 +131,38 @@ export function ProfileHeader({
         </div>
       </div>
 
-      {/* Observations field */}
-      <div>
-        <label className="nivo-field-label flex items-center gap-2" htmlFor="observations">
-          <FileText className="w-4 h-4" />
-          {t.header.observations}
-        </label>
-        <textarea
-          id="observations"
-          className="nivo-input min-h-[80px] resize-y"
-          value={observations}
-          onChange={(e) => setObservations(e.target.value)}
-          placeholder={t.header.observationsPlaceholder}
-          disabled={isStarted}
-        />
+      {/* Observations and Temperature fields */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label className="nivo-field-label flex items-center gap-2" htmlFor="observations">
+            <FileText className="w-4 h-4" />
+            {t.header.observations}
+          </label>
+          <textarea
+            id="observations"
+            className="nivo-input min-h-[80px] resize-y"
+            value={observations}
+            onChange={(e) => setObservations(e.target.value)}
+            placeholder={t.header.observationsPlaceholder}
+            disabled={isStarted}
+          />
+        </div>
+        <div>
+          <label className="nivo-field-label flex items-center gap-2" htmlFor="temperature">
+            <Thermometer className="w-4 h-4" />
+            {t.header.airTemperature || 'Temperatura del aire (°C)'}
+          </label>
+          <input
+            id="temperature"
+            type="number"
+            step="0.1"
+            className="nivo-input"
+            value={temperature}
+            onChange={(e) => setTemperature(e.target.value)}
+            placeholder={t.header.airTemperaturePlaceholder || 'Ej: -5.2'}
+            disabled={isStarted}
+          />
+        </div>
       </div>
 
       {/* GPS and Time display */}
