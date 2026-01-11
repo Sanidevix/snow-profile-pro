@@ -79,6 +79,7 @@ export const es: Translation = {
     addSample: 'Añadir Muestra CT',
     nextSample: 'Siguiente Muestra',
     finishTest: 'Finalizar Test CT',
+    finishSampling: 'Finalizar muestreo',
     sampleRegistered: 'Muestra CT registrada',
     layerAdded: 'Fractura a {depth}cm añadida',
     confirmFinishTitle: '¿Finalizar test CT?',

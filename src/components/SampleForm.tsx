@@ -1,29 +1,17 @@
 import React, { useState } from 'react';
-import { Plus, Check, Thermometer, Ruler, Droplets, Snowflake, Minus } from 'lucide-react';
+import { Plus, Thermometer, Ruler, Droplets, Snowflake, Minus } from 'lucide-react';
 import { SnowSample, RESISTANCE_VALUES, GRAIN_TYPES, HUMIDITY_VALUES } from '@/lib/db';
 import { useI18n } from '@/i18n/context';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 
 interface SampleFormProps {
   sampleNumber: number;
   onAddSample: (sample: Omit<SnowSample, 'id'>) => void;
-  onFinishProfile: () => void;
   totalHeight: number;
 }
 
 export function SampleForm({
   sampleNumber,
   onAddSample,
-  onFinishProfile,
   totalHeight,
 }: SampleFormProps) {
   const { t } = useI18n();
@@ -33,16 +21,6 @@ export function SampleForm({
   const [grainType, setGrainType] = useState<number | null>(null);
   const [diameter, setDiameter] = useState<string>('');
   const [humidity, setHumidity] = useState<string>('');
-  const [showFinishDialog, setShowFinishDialog] = useState(false);
-
-  const handleFinishClick = () => {
-    setShowFinishDialog(true);
-  };
-
-  const handleConfirmFinish = () => {
-    setShowFinishDialog(false);
-    onFinishProfile();
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -329,44 +307,18 @@ export function SampleForm({
           </p>
         </div>
 
-        {/* Action buttons */}
-        <div className="grid gap-4 sm:grid-cols-2 pt-4">
+        {/* Action button */}
+        <div className="pt-4">
           <button
             type="submit"
             disabled={!isFormValid}
-            className="nivo-btn-success"
+            className="nivo-btn-success w-full"
           >
             <Plus className="w-5 h-5" />
             {t.samples.nextSample}
           </button>
-          <button
-            type="button"
-            onClick={handleFinishClick}
-            className="nivo-btn-primary"
-            disabled={sampleNumber === 1}
-          >
-            <Check className="w-5 h-5" />
-            {t.samples.finishProfile}
-          </button>
         </div>
       </form>
-
-      <AlertDialog open={showFinishDialog} onOpenChange={setShowFinishDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t.samples.confirmFinishTitle}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t.samples.confirmFinishMessage}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t.samples.cancel}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmFinish}>
-              {t.samples.confirm}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }
