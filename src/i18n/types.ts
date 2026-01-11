@@ -33,6 +33,8 @@ export interface Translation {
     coordinates: string;
     altitude: string;
     timeUTC: string;
+    airTemperature?: string;
+    airTemperaturePlaceholder?: string;
     startSampling: string;
     gpsFixed: string;
     gpsActive: string;

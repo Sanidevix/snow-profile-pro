@@ -36,6 +36,7 @@ export function ProfileApp() {
   const [profileName, setProfileName] = useState('');
   const [observer, setObserver] = useState('');
   const [observations, setObservations] = useState('');
+  const [temperature, setTemperature] = useState('');
   const [samples, setSamples] = useState<SnowSample[]>([]);
   const [ctSamples, setCTSamples] = useState<CTSample[]>([]);
   const [frozenData, setFrozenData] = useState<{
@@ -323,6 +324,7 @@ export function ProfileApp() {
     setProfileName('');
     setObserver('');
     setObservations('');
+    setTemperature('');
     setSamples([]);
     setCTSamples([]);
     setFrozenData(null);
@@ -389,34 +391,41 @@ export function ProfileApp() {
       </header>
 
       <main className="nivo-container pb-8 space-y-6">
-        <ProfileHeader profileName={profileName} setProfileName={setProfileName} observer={observer} setObserver={setObserver} observations={observations} setObservations={setObservations} onStartProfile={handleStartProfile} isStarted={appState !== 'header'} frozenData={frozenData} />
+        <ProfileHeader profileName={profileName} setProfileName={setProfileName} observer={observer} setObserver={setObserver} observations={observations} setObservations={setObservations} temperature={temperature} setTemperature={setTemperature} onStartProfile={handleStartProfile} isStarted={appState !== 'header'} frozenData={frozenData} />
 
         {appState === 'testSelection' && (
           <TestTypeSelector selectedType={testType} onTypeChange={handleTestTypeSelect} />
         )}
 
         {appState === 'sampling' && (
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'stratigraphic' | 'compression')} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-4">
-              <TabsTrigger value="stratigraphic" className="flex items-center gap-2">
-                {t.testType?.stratigraphicProfile || 'Perfil Estratigráfico'}
-                {samples.length > 0 && (
-                  <span className="bg-primary/20 text-primary px-2 py-0.5 rounded-full text-xs font-bold">
-                    {samples.length}
-                  </span>
-                )}
-              </TabsTrigger>
-              <TabsTrigger value="compression" className="flex items-center gap-2">
-                {t.testType?.compressionTest || 'Test CT'}
-                {ctSamples.length > 0 && (
-                  <span className="bg-primary/20 text-primary px-2 py-0.5 rounded-full text-xs font-bold">
-                    {ctSamples.length}
-                  </span>
-                )}
-              </TabsTrigger>
-            </TabsList>
+          <div className="nivo-card p-0 overflow-hidden">
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'stratigraphic' | 'compression')} className="w-full">
+              <TabsList className="grid w-full grid-cols-2 h-14 rounded-none bg-muted/50 p-0 gap-0">
+                <TabsTrigger 
+                  value="stratigraphic" 
+                  className="h-full rounded-none data-[state=active]:bg-background data-[state=active]:shadow-none border-b-2 data-[state=active]:border-primary data-[state=inactive]:border-transparent flex items-center justify-center gap-2 text-sm font-medium"
+                >
+                  {t.testType?.stratigraphicProfile || 'Perfil Estratigráfico'}
+                  {samples.length > 0 && (
+                    <span className="bg-primary text-primary-foreground px-2 py-0.5 rounded-full text-xs font-bold min-w-[24px]">
+                      {samples.length}
+                    </span>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="compression" 
+                  className="h-full rounded-none data-[state=active]:bg-background data-[state=active]:shadow-none border-b-2 data-[state=active]:border-primary data-[state=inactive]:border-transparent flex items-center justify-center gap-2 text-sm font-medium"
+                >
+                  {t.testType?.compressionTest || 'Test CT'}
+                  {ctSamples.length > 0 && (
+                    <span className="bg-primary text-primary-foreground px-2 py-0.5 rounded-full text-xs font-bold min-w-[24px]">
+                      {ctSamples.length}
+                    </span>
+                  )}
+                </TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="stratigraphic" className="space-y-6">
+              <TabsContent value="stratigraphic" className="p-4 space-y-6 mt-0">
               <SampleForm sampleNumber={samples.length + 1} onAddSample={handleAddSample} totalHeight={totalHeight} />
               
               {samples.length > 0 && (
@@ -434,14 +443,15 @@ export function ProfileApp() {
               )}
             </TabsContent>
 
-            <TabsContent value="compression" className="space-y-6">
-              <CTSampleForm sampleNumber={ctSamples.length + 1} onAddSample={handleAddCTSample} />
+              <TabsContent value="compression" className="p-4 space-y-6 mt-0">
+                <CTSampleForm sampleNumber={ctSamples.length + 1} onAddSample={handleAddCTSample} />
               
               {ctSamples.length > 0 && (
                 <CTSampleTable samples={ctSamples} onDeleteSample={handleDeleteCTSample} />
               )}
-            </TabsContent>
-          </Tabs>
+              </TabsContent>
+            </Tabs>
+          </div>
         )}
 
         {appState === 'sampling' && hasSamples && (
