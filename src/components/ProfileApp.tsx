@@ -37,6 +37,7 @@ export function ProfileApp() {
   const [observer, setObserver] = useState('');
   const [observations, setObservations] = useState('');
   const [temperature, setTemperature] = useState('');
+  const [orientation, setOrientation] = useState('');
   const [samples, setSamples] = useState<SnowSample[]>([]);
   const [ctSamples, setCTSamples] = useState<CTSample[]>([]);
   const [frozenData, setFrozenData] = useState<{
@@ -216,6 +217,8 @@ export function ProfileApp() {
         name: profile.name,
         observer: profile.observer,
         observations: profile.observations || '',
+        airTemperature: temperature ? parseFloat(temperature) : null,
+        slopeOrientation: orientation || null,
         timestamp: profile.timestamp,
         createdAt: profile.createdAt,
         updatedAt: profile.updatedAt,
@@ -266,7 +269,7 @@ export function ProfileApp() {
     URL.revokeObjectURL(url);
 
     toast({ title: t.results.geojsonExported, description: t.results.downloading });
-  }, [buildProfile, ctSamples, t]);
+  }, [buildProfile, ctSamples, temperature, orientation, t]);
 
   const handleImportGeoJSON = useCallback(() => {
     fileInputRef.current?.click();
@@ -326,6 +329,7 @@ export function ProfileApp() {
     setObserver('');
     setObservations('');
     setTemperature('');
+    setOrientation('');
     setSamples([]);
     setCTSamples([]);
     setFrozenData(null);
@@ -392,7 +396,7 @@ export function ProfileApp() {
       </header>
 
       <main className="nivo-container pb-8 space-y-6">
-        <ProfileHeader profileName={profileName} setProfileName={setProfileName} observer={observer} setObserver={setObserver} observations={observations} setObservations={setObservations} temperature={temperature} setTemperature={setTemperature} onStartProfile={handleStartProfile} isStarted={appState !== 'header'} frozenData={frozenData} />
+        <ProfileHeader profileName={profileName} setProfileName={setProfileName} observer={observer} setObserver={setObserver} observations={observations} setObservations={setObservations} temperature={temperature} setTemperature={setTemperature} orientation={orientation} setOrientation={setOrientation} onStartProfile={handleStartProfile} isStarted={appState !== 'header'} frozenData={frozenData} />
 
         {appState === 'testSelection' && (
           <TestTypeSelector selectedType={testType} onTypeChange={handleTestTypeSelect} />
