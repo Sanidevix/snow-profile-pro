@@ -21,6 +21,8 @@ export const es: Translation = {
     timeUTC: 'Hora UTC',
     airTemperature: 'Temperatura del aire (°C)',
     airTemperaturePlaceholder: 'Ej: -5.2',
+    slopeOrientation: 'Orientación',
+    slopeOrientationPlaceholder: 'Seleccionar...',
     startSampling: 'Iniciar Toma de Muestras',
     gpsFixed: 'GPS Fijado',
     gpsActive: 'GPS Activo',

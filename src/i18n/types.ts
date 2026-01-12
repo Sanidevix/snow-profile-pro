@@ -35,6 +35,8 @@ export interface Translation {
     timeUTC: string;
     airTemperature?: string;
     airTemperaturePlaceholder?: string;
+    slopeOrientation?: string;
+    slopeOrientationPlaceholder?: string;
     startSampling: string;
     gpsFixed: string;
     gpsActive: string;

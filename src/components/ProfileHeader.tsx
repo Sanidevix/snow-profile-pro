@@ -1,9 +1,23 @@
 import React, { useState } from 'react';
-import { MapPin, Mountain, Clock, Loader2, FileText, Thermometer } from 'lucide-react';
+import { MapPin, Mountain, Clock, Loader2, FileText, Thermometer, Compass } from 'lucide-react';
 import { useGeolocation, formatAltitude } from '@/hooks/useGeolocation';
 import { useCurrentTime, formatTimeShortUTC, formatDateUTC } from '@/hooks/useCurrentTime';
 import { formatDecimalCoords, formatSexagesimalCoords } from '@/lib/db';
 import { useI18n } from '@/i18n/context';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+export const SLOPE_ORIENTATIONS = [
+  { value: 'N', label: 'N' },
+  { value: 'NE', label: 'NE' },
+  { value: 'E', label: 'E' },
+  { value: 'SE', label: 'SE' },
+  { value: 'S', label: 'S' },
+  { value: 'SW', label: 'SO' },
+  { value: 'W', label: 'O' },
+  { value: 'NW', label: 'NO' },
+] as const;
+
+export type SlopeOrientation = typeof SLOPE_ORIENTATIONS[number]['value'];
 
 interface ProfileHeaderProps {
   profileName: string;
@@ -14,6 +28,8 @@ interface ProfileHeaderProps {
   setObservations: (observations: string) => void;
   temperature: string;
   setTemperature: (temperature: string) => void;
+  orientation: string;
+  setOrientation: (orientation: string) => void;
   onStartProfile: () => void;
   isStarted: boolean;
   frozenData: {
@@ -33,6 +49,8 @@ export function ProfileHeader({
   setObservations,
   temperature,
   setTemperature,
+  orientation,
+  setOrientation,
   onStartProfile,
   isStarted,
   frozenData,
@@ -131,22 +149,8 @@ export function ProfileHeader({
         </div>
       </div>
 
-      {/* Observations and Temperature fields */}
+      {/* Temperature and Orientation fields */}
       <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label className="nivo-field-label flex items-center gap-2" htmlFor="observations">
-            <FileText className="w-4 h-4" />
-            {t.header.observations}
-          </label>
-          <textarea
-            id="observations"
-            className="nivo-input min-h-[80px] resize-y"
-            value={observations}
-            onChange={(e) => setObservations(e.target.value)}
-            placeholder={t.header.observationsPlaceholder}
-            disabled={isStarted}
-          />
-        </div>
         <div>
           <label className="nivo-field-label flex items-center gap-2" htmlFor="temperature">
             <Thermometer className="w-4 h-4" />
@@ -163,6 +167,45 @@ export function ProfileHeader({
             disabled={isStarted}
           />
         </div>
+        <div>
+          <label className="nivo-field-label flex items-center gap-2" htmlFor="orientation">
+            <Compass className="w-4 h-4" />
+            {t.header.slopeOrientation || 'Orientación'}
+          </label>
+          <Select
+            value={orientation}
+            onValueChange={setOrientation}
+            disabled={isStarted}
+          >
+            <SelectTrigger id="orientation" className="nivo-input">
+              <SelectValue placeholder={t.header.slopeOrientationPlaceholder || 'Seleccionar...'} />
+            </SelectTrigger>
+            <SelectContent>
+              {SLOPE_ORIENTATIONS.map((o) => (
+                <SelectItem key={o.value} value={o.value}>
+                  {o.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Observations field - full width */}
+      <div>
+        <label className="nivo-field-label flex items-center gap-2" htmlFor="observations">
+          <FileText className="w-4 h-4" />
+          {t.header.observations}
+        </label>
+        <textarea
+          id="observations"
+          className="nivo-input min-h-[80px] resize-y"
+          rows={3}
+          value={observations}
+          onChange={(e) => setObservations(e.target.value)}
+          placeholder={t.header.observationsPlaceholder}
+          disabled={isStarted}
+        />
       </div>
 
       {/* GPS and Time display */}
