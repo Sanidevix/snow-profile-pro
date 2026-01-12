@@ -1,8 +1,11 @@
 // Types for Compression Test (CT) data
 
+export type VerticalReference = 'top_down' | 'bottom_up';
+
 export interface CTSample {
   id: number;
   taps: number; // Number of taps/blows (0-31)
+  reference: VerticalReference; // Vertical reference for depth measurement
   depth: number; // Depth of the layer in cm
   fractureQuality: 'Q1' | 'Q2' | 'Q3'; // Fracture quality
   grainType: number; // Grain type 1-9
@@ -38,23 +41,31 @@ export function getCTScoreLabel(taps: number): string {
   }
 }
 
-// Format CT sample result as: CT#Qn@↓zzzFD Infos
+// Format CT sample result as: CT#Qn@↓zzzFD Infos or CT#Qn@↑zzzFD Infos
 // CT = fixed
 // # = score (V, E, M, H, N)
 // Qn = fracture quality (Q1, Q2, Q3)
-// @ ↓ = fixed
+// @ = fixed
+// ↓ or ↑ = vertical reference symbol (top_down=↓, bottom_up=↑)
 // zzz = depth
 // F = grain type (IACS acronym)
 // D = diameter with mm
 // Infos = additional info
 export function formatCTResult(sample: CTSample, grainLabel: string): string {
   const score = getCTScore(sample.taps);
+  const refSymbol = sample.reference === 'bottom_up' ? '↑' : '↓';
   const depth = sample.depth;
   const diameter = sample.diameter !== null ? `${sample.diameter}mm` : '';
   const info = sample.additionalInfo || '';
   
-  return `CT${score}${sample.fractureQuality}@↓${depth}${grainLabel}${diameter} ${info}`.trim();
+  return `CT${score}${sample.fractureQuality}@${refSymbol}${depth}${grainLabel}${diameter} ${info}`.trim();
 }
+
+// Vertical reference options
+export const VERTICAL_REFERENCE_OPTIONS = [
+  { value: 'top_down' as const, label: '↓', description: 'Desde superficie del manto' },
+  { value: 'bottom_up' as const, label: '↑', description: 'Desde el suelo' },
+] as const;
 
 // Fracture quality options
 export const FRACTURE_QUALITY_OPTIONS = [

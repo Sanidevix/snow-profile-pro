@@ -85,6 +85,12 @@ export interface Translation {
     sampleNumber: string;
     tapNumber: string;
     tapNumberHint: string;
+    verticalReference: string;
+    verticalReferenceHint: string;
+    verticalReferenceOptions: {
+      top_down: string;
+      bottom_up: string;
+    };
     layerDepth: string;
     layerDepthHint: string;
     fractureQuality: string;
