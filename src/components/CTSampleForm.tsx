@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Plus, Ruler, Snowflake, Minus, Info } from 'lucide-react';
-import { CTSample, FRACTURE_QUALITY_OPTIONS } from '@/lib/ctTypes';
+import { Plus, Ruler, Snowflake, Minus, Info, ArrowDown, ArrowUp } from 'lucide-react';
+import { CTSample, FRACTURE_QUALITY_OPTIONS, VERTICAL_REFERENCE_OPTIONS, VerticalReference } from '@/lib/ctTypes';
 import { GRAIN_TYPES } from '@/lib/db';
 import { useI18n } from '@/i18n/context';
 
@@ -17,6 +17,7 @@ export function CTSampleForm({
   const ct = t.compressionTest;
   
   const [taps, setTaps] = useState<string>('');
+  const [reference, setReference] = useState<VerticalReference>('top_down');
   const [depth, setDepth] = useState<string>('');
   const [fractureQuality, setFractureQuality] = useState<'Q1' | 'Q2' | 'Q3' | null>(null);
   const [grainType, setGrainType] = useState<number | null>(null);
@@ -32,6 +33,7 @@ export function CTSampleForm({
 
     const sample: Omit<CTSample, 'id'> = {
       taps: parseInt(taps),
+      reference,
       depth: parseFloat(depth),
       fractureQuality,
       grainType,
@@ -136,6 +138,33 @@ export function CTSampleForm({
           </div>
           <p className="text-xs text-muted-foreground mt-1">
             {ct?.tapNumberHint || 'De 0 a 31 golpes (0=V, 1-10=E, 11-20=M, 21-30=H, 31=N)'}
+          </p>
+        </div>
+
+        {/* Vertical Reference */}
+        <div>
+          <label className="nivo-field-label flex items-center gap-2">
+            {ct?.verticalReference || 'Referencia Vertical'} *
+          </label>
+          <div className="grid grid-cols-2 gap-2 mb-2">
+            {VERTICAL_REFERENCE_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setReference(option.value)}
+                className={`nivo-quick-btn flex items-center justify-center gap-2 py-3 ${reference === option.value ? 'active' : ''}`}
+              >
+                {option.value === 'top_down' ? (
+                  <ArrowDown className="w-5 h-5" />
+                ) : (
+                  <ArrowUp className="w-5 h-5" />
+                )}
+                <span className="text-sm">{ct?.verticalReferenceOptions?.[option.value] || option.description}</span>
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {ct?.verticalReferenceHint || 'Punto de origen para medir la profundidad'}
           </p>
         </div>
 

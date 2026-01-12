@@ -238,6 +238,7 @@ export function ProfileApp() {
           id: sample.id,
           number: index + 1,
           taps: sample.taps,
+          reference: sample.reference,
           depth: sample.depth,
           fractureQuality: sample.fractureQuality,
           grainType: sample.grainType,

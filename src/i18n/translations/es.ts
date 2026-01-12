@@ -65,6 +65,12 @@ export const es: Translation = {
     sampleNumber: 'Muestra CT #{number}',
     tapNumber: 'Número de Golpes',
     tapNumberHint: 'De 0 a 31 golpes (0=V, 1-10=E, 11-20=M, 21-30=H, 31=N)',
+    verticalReference: 'Referencia Vertical',
+    verticalReferenceHint: 'Punto de origen para medir la profundidad',
+    verticalReferenceOptions: {
+      top_down: 'Desde superficie',
+      bottom_up: 'Desde el suelo',
+    },
     layerDepth: 'Profundidad de la capa (cm)',
     layerDepthHint: 'Profundidad donde se produce la fractura',
     fractureQuality: 'Calidad de la Fractura',
