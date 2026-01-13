@@ -442,7 +442,7 @@ export function ProfileApp() {
                       {showChart ? t.results.hideChart : t.results.showChart}
                     </button>
                   </div>
-                  {showChart && <StratigraphicChart samples={samples} />}
+                  {showChart && <StratigraphicChart samples={samples} ctSamples={ctSamples} />}
                   <SampleTable samples={samples} onDeleteSample={handleDeleteSample} onReorderSample={handleReorderSample} />
                 </div>
               )}
@@ -492,7 +492,7 @@ export function ProfileApp() {
           <div className="space-y-6">
             {samples.length > 0 && (
               <>
-                <StratigraphicChart samples={samples} />
+                <StratigraphicChart samples={samples} ctSamples={ctSamples} />
                 <SampleTable samples={samples} />
               </>
             )}

@@ -1,8 +1,10 @@
 import React, { useMemo } from 'react';
 import { SnowSample, GRAIN_TYPES } from '@/lib/db';
+import { CTSample, getCTScore, formatCTResult } from '@/lib/ctTypes';
 
 interface StratigraphicChartProps {
   samples: SnowSample[];
+  ctSamples?: CTSample[];
   maxHeight?: number;
 }
 
@@ -25,9 +27,31 @@ const getGrainColor = (grainType: number): string => {
   return grain?.color ?? '#808080';
 };
 
-export function StratigraphicChart({ samples, maxHeight }: StratigraphicChartProps) {
+const getGrainLabel = (grainType: number): string => {
+  const grain = GRAIN_TYPES.find(g => g.value === grainType);
+  return grain?.label ?? '';
+};
+
+// Calculate CT sample Y position based on reference and total height
+const calculateCTYPosition = (sample: CTSample, totalHeight: number): number => {
+  if (sample.reference === 'bottom_up') {
+    // Case A: From ground (↑) - position equals the value
+    return sample.depth;
+  } else {
+    // Case B: From surface (↓)
+    if (totalHeight > 0) {
+      // With accumulated height: H - depth
+      return totalHeight - sample.depth;
+    } else {
+      // Without accumulated height: use depth directly
+      return sample.depth;
+    }
+  }
+};
+
+export function StratigraphicChart({ samples, ctSamples = [], maxHeight }: StratigraphicChartProps) {
   const chartData = useMemo(() => {
-    if (samples.length === 0) return null;
+    if (samples.length === 0 && ctSamples.length === 0) return null;
 
     // Calculate accumulated heights
     let accumulatedHeight = 0;
@@ -43,14 +67,20 @@ export function StratigraphicChart({ samples, maxHeight }: StratigraphicChartPro
     });
 
     const totalHeight = accumulatedHeight;
-    const chartHeight = Math.max(totalHeight, maxHeight ?? CHART_CONFIG.heightMax);
+    
+    // Calculate max CT position to ensure chart height accommodates CT samples
+    const maxCTPosition = ctSamples.length > 0 
+      ? Math.max(...ctSamples.map(s => calculateCTYPosition(s, totalHeight)))
+      : 0;
+    
+    const chartHeight = Math.max(totalHeight, maxCTPosition, maxHeight ?? CHART_CONFIG.heightMax);
 
     return {
       samples: processedSamples,
       totalHeight,
       chartHeight,
     };
-  }, [samples, maxHeight]);
+  }, [samples, ctSamples, maxHeight]);
 
   if (!chartData) {
     return (
@@ -62,7 +92,7 @@ export function StratigraphicChart({ samples, maxHeight }: StratigraphicChartPro
     );
   }
 
-  const { samples: processedSamples, chartHeight } = chartData;
+  const { samples: processedSamples, totalHeight, chartHeight } = chartData;
   const { width, height, marginTop, marginRight, marginBottom, marginLeft } = CHART_CONFIG;
   
   const innerWidth = width - marginLeft - marginRight;
@@ -95,6 +125,19 @@ export function StratigraphicChart({ samples, maxHeight }: StratigraphicChartPro
     ? `M ${temperaturePoints.map(p => `${p.x},${p.y}`).join(' L ')}`
     : '';
 
+  // Process CT samples for visualization
+  const processedCTSamples = ctSamples.map((sample, index) => {
+    const yPosition = calculateCTYPosition(sample, totalHeight);
+    const grainLabel = getGrainLabel(sample.grainType);
+    const formattedResult = formatCTResult(sample, grainLabel);
+    return {
+      ...sample,
+      index: index + 1,
+      yPosition,
+      formattedResult,
+    };
+  });
+
   return (
     <div className="nivo-chart-container overflow-x-auto">
       <div className="text-center mb-4">
@@ -111,6 +154,24 @@ export function StratigraphicChart({ samples, maxHeight }: StratigraphicChartPro
         className="w-full max-w-full"
         style={{ minWidth: '400px' }}
       >
+        {/* Marker definitions for CT arrows */}
+        <defs>
+          <marker
+            id="ct-arrowhead"
+            markerWidth="8"
+            markerHeight="8"
+            refX="0"
+            refY="4"
+            orient="auto"
+            markerUnits="strokeWidth"
+          >
+            <path
+              d="M0,0 L0,8 L8,4 Z"
+              fill="#FF0000"
+            />
+          </marker>
+        </defs>
+
         {/* Axis labels */}
         <text
           x={width / 2}
@@ -297,6 +358,67 @@ export function StratigraphicChart({ samples, maxHeight }: StratigraphicChartPro
           </>
         )}
 
+        {/* CT Sample Connectors - Red precision arrows with z-index priority */}
+        {processedCTSamples.map((ct, index) => {
+          const y = yScale(ct.yPosition);
+          // Connector starts slightly offset from axis for readability
+          const axisX = marginLeft + innerWidth + 5;
+          const lineStartX = axisX + 8;
+          const lineEndX = axisX + 45;
+          const textX = lineEndX + 5;
+          
+          // Prevent connector from going outside chart bounds
+          if (y < marginTop || y > marginTop + innerHeight) {
+            return null;
+          }
+
+          return (
+            <g key={`ct-${index}`} style={{ zIndex: 100 }}>
+              {/* Arrow line pointing to exact height */}
+              <line
+                x1={lineStartX}
+                y1={y}
+                x2={axisX}
+                y2={y}
+                stroke="#FF0000"
+                strokeWidth="2"
+                markerEnd="url(#ct-arrowhead)"
+              />
+              {/* Horizontal connector line */}
+              <line
+                x1={lineStartX}
+                y1={y}
+                x2={lineEndX}
+                y2={y}
+                stroke="#FF0000"
+                strokeWidth="1.5"
+              />
+              {/* CT result text */}
+              <text
+                x={textX}
+                y={y + 4}
+                className="text-[9px] font-semibold"
+                fill="#FF0000"
+                style={{ 
+                  textShadow: '0 0 2px white, 0 0 2px white, 0 0 2px white',
+                  fontFamily: 'monospace'
+                }}
+              >
+                {ct.formattedResult}
+              </text>
+              {/* Small marker at exact position for precision */}
+              <circle
+                cx={axisX}
+                cy={y}
+                r="3"
+                fill="#FF0000"
+                stroke="white"
+                strokeWidth="1"
+              />
+            </g>
+          );
+        })}
+
         {/* Legend - positioned on the left with IACS colors */}
         <g transform={`translate(5, ${marginTop})`}>
           <text
@@ -327,6 +449,28 @@ export function StratigraphicChart({ samples, maxHeight }: StratigraphicChartPro
               </text>
             </g>
           ))}
+          
+          {/* CT Legend entry if there are CT samples */}
+          {processedCTSamples.length > 0 && (
+            <g transform={`translate(0, ${GRAIN_TYPES.length * 20 + 10})`}>
+              <line
+                x1="0"
+                y1="7"
+                x2="14"
+                y2="7"
+                stroke="#FF0000"
+                strokeWidth="2"
+                markerEnd="url(#ct-arrowhead)"
+              />
+              <text
+                x="18"
+                y="11"
+                className="text-[9px] fill-foreground"
+              >
+                Test CT
+              </text>
+            </g>
+          )}
         </g>
       </svg>
     </div>
