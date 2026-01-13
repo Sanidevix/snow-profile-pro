@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, Mountain, Clock, Loader2, FileText, Thermometer, Compass } from 'lucide-react';
+import { MapPin, Mountain, Clock, Loader2, FileText, Thermometer, Compass, User, Tag } from 'lucide-react';
 import { useGeolocation, formatAltitude } from '@/hooks/useGeolocation';
 import { useCurrentTime, formatTimeShortUTC, formatDateUTC } from '@/hooks/useCurrentTime';
 import { formatDecimalCoords, formatSexagesimalCoords } from '@/lib/db';
@@ -120,7 +120,8 @@ export function ProfileHeader({
       {/* Profile identification */}
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="nivo-field-label" htmlFor="profileName">
+          <label className="nivo-field-label flex items-center gap-2" htmlFor="profileName">
+            <Tag className="w-4 h-4" />
             {t.header.profileName}
           </label>
           <input
@@ -134,7 +135,8 @@ export function ProfileHeader({
           />
         </div>
         <div>
-          <label className="nivo-field-label" htmlFor="observer">
+          <label className="nivo-field-label flex items-center gap-2" htmlFor="observer">
+            <User className="w-4 h-4" />
             {t.header.observer}
           </label>
           <input
@@ -152,25 +154,24 @@ export function ProfileHeader({
       {/* Temperature and Orientation fields */}
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="nivo-field-label" htmlFor="temperature">
+          <label className="nivo-field-label flex items-center gap-2" htmlFor="temperature">
+            <Thermometer className="w-4 h-4" />
             {t.header.airTemperature || 'Temperatura del aire (°C)'}
           </label>
-          <div className="relative">
-            <Thermometer className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input
-              id="temperature"
-              type="number"
-              step="0.1"
-              className="nivo-input h-[42px] pl-10"
-              value={temperature}
-              onChange={(e) => setTemperature(e.target.value)}
-              placeholder={t.header.airTemperaturePlaceholder || 'Ej: -5.2'}
-              disabled={isStarted}
-            />
-          </div>
+          <input
+            id="temperature"
+            type="number"
+            step="0.1"
+            className="nivo-input h-[42px]"
+            value={temperature}
+            onChange={(e) => setTemperature(e.target.value)}
+            placeholder={t.header.airTemperaturePlaceholder || 'Ej: -5.2'}
+            disabled={isStarted}
+          />
         </div>
         <div>
-          <label className="nivo-field-label" htmlFor="orientation">
+          <label className="nivo-field-label flex items-center gap-2" htmlFor="orientation">
+            <Compass className="w-4 h-4" />
             {t.header.slopeOrientation || 'Orientación'}
           </label>
           <Select
@@ -179,10 +180,7 @@ export function ProfileHeader({
             disabled={isStarted}
           >
             <SelectTrigger id="orientation" className="nivo-input h-[42px]">
-              <div className="flex items-center gap-2">
-                <Compass className="w-4 h-4 text-muted-foreground shrink-0" />
-                <SelectValue placeholder={t.header.slopeOrientationPlaceholder || 'Seleccionar...'} />
-              </div>
+              <SelectValue placeholder={t.header.slopeOrientationPlaceholder || 'Seleccionar...'} />
             </SelectTrigger>
             <SelectContent>
               {SLOPE_ORIENTATIONS.map((o) => (

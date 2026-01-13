@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Ruler, Snowflake, Minus, Info, ArrowDown, ArrowUp } from 'lucide-react';
+import { Plus, Ruler, Snowflake, Minus, Info, ArrowDown, ArrowUp, Circle, Hash } from 'lucide-react';
 import { CTSample, FRACTURE_QUALITY_OPTIONS, VERTICAL_REFERENCE_OPTIONS, VerticalReference } from '@/lib/ctTypes';
 import { GRAIN_TYPES } from '@/lib/db';
 import { useI18n } from '@/i18n/context';
@@ -65,6 +65,7 @@ export function CTSampleForm({
         {/* Number of Taps - Required with stepper buttons (range 0-31) */}
         <div>
           <label className="nivo-field-label flex items-center gap-2">
+            <Hash className="w-4 h-4" />
             {ct?.tapNumber || 'Número de Golpes'} *
           </label>
           <div className="flex items-stretch">
@@ -272,7 +273,8 @@ export function CTSampleForm({
 
         {/* Diameter - Optional */}
         <div>
-          <label className="nivo-field-label">
+          <label className="nivo-field-label flex items-center gap-2">
+            <Circle className="w-4 h-4" />
             {ct?.grainDiameter || 'Diámetro del grano (mm)'}
           </label>
           <input
