@@ -152,24 +152,25 @@ export function ProfileHeader({
       {/* Temperature and Orientation fields */}
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="nivo-field-label flex items-center gap-2" htmlFor="temperature">
-            <Thermometer className="w-4 h-4" />
+          <label className="nivo-field-label" htmlFor="temperature">
             {t.header.airTemperature || 'Temperatura del aire (°C)'}
           </label>
-          <input
-            id="temperature"
-            type="number"
-            step="0.1"
-            className="nivo-input"
-            value={temperature}
-            onChange={(e) => setTemperature(e.target.value)}
-            placeholder={t.header.airTemperaturePlaceholder || 'Ej: -5.2'}
-            disabled={isStarted}
-          />
+          <div className="relative">
+            <Thermometer className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              id="temperature"
+              type="number"
+              step="0.1"
+              className="nivo-input h-[42px] pl-10"
+              value={temperature}
+              onChange={(e) => setTemperature(e.target.value)}
+              placeholder={t.header.airTemperaturePlaceholder || 'Ej: -5.2'}
+              disabled={isStarted}
+            />
+          </div>
         </div>
         <div>
-          <label className="nivo-field-label flex items-center gap-2" htmlFor="orientation">
-            <Compass className="w-4 h-4" />
+          <label className="nivo-field-label" htmlFor="orientation">
             {t.header.slopeOrientation || 'Orientación'}
           </label>
           <Select
@@ -177,8 +178,11 @@ export function ProfileHeader({
             onValueChange={setOrientation}
             disabled={isStarted}
           >
-            <SelectTrigger id="orientation" className="nivo-input">
-              <SelectValue placeholder={t.header.slopeOrientationPlaceholder || 'Seleccionar...'} />
+            <SelectTrigger id="orientation" className="nivo-input h-[42px]">
+              <div className="flex items-center gap-2">
+                <Compass className="w-4 h-4 text-muted-foreground shrink-0" />
+                <SelectValue placeholder={t.header.slopeOrientationPlaceholder || 'Seleccionar...'} />
+              </div>
             </SelectTrigger>
             <SelectContent>
               {SLOPE_ORIENTATIONS.map((o) => (
