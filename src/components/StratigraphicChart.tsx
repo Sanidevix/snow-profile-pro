@@ -144,9 +144,6 @@ export function StratigraphicChart({ samples, ctSamples = [], maxHeight }: Strat
         <h3 className="text-lg font-bold text-foreground">
           Perfil Estratigráfico de Nieve
         </h3>
-        <p className="text-sm text-muted-foreground">
-          Según estándar AEMET - Sección 5.4.4
-        </p>
       </div>
 
       <svg
