@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Thermometer, Ruler, Droplets, Snowflake, Minus } from 'lucide-react';
+import { Plus, Thermometer, Ruler, Droplets, Snowflake, Minus, Circle } from 'lucide-react';
 import { SnowSample, RESISTANCE_VALUES, GRAIN_TYPES, HUMIDITY_VALUES } from '@/lib/db';
 import { useI18n } from '@/i18n/context';
 
@@ -269,7 +269,8 @@ export function SampleForm({
 
         {/* Diameter - Optional */}
         <div>
-          <label className="nivo-field-label">
+          <label className="nivo-field-label flex items-center gap-2">
+            <Circle className="w-4 h-4" />
             {t.samples.grainSize}
           </label>
           <input
