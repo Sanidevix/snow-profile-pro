@@ -56,7 +56,7 @@ const Index = () => {
           <div className="flex items-center gap-3">
             <Download className="w-6 h-6 flex-shrink-0" />
             <div>
-              <p className="font-bold">Instalar NivoApp</p>
+              <p className="font-bold">Instalar SnowStrat</p>
               <p className="text-sm opacity-90">Acceso rápido y funcionamiento sin conexión</p>
             </div>
           </div>
