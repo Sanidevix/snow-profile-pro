@@ -28,7 +28,7 @@ export function Documentation({ open, onOpenChange }: DocumentationProps) {
             <BookOpen className="w-5 h-5" />
             {t.docs.title}
           </DialogTitle>
-          <DialogDescription>NivoApp - Stratigraphic Profile Application</DialogDescription>
+          <DialogDescription>SnowStrat - Stratigraphic Profile Application</DialogDescription>
         </DialogHeader>
         
         <ScrollArea className="h-[60vh] pr-4">
