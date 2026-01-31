@@ -261,7 +261,7 @@ export function SampleForm({
             <option value="">{t.samples.grainTypeSelect}</option>
             {GRAIN_TYPES.map((g) => (
               <option key={g.value} value={g.value}>
-                {g.value} - {g.label}: {g.name}
+                {g.name} ({g.label})
               </option>
             ))}
           </select>
