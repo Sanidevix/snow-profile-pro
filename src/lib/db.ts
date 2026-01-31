@@ -110,15 +110,15 @@ export const RESISTANCE_VALUES = [
 // Grain types per AEMET classification (1-9) with IACS colors
 export const GRAIN_TYPES = [
   { value: 1, label: 'PP', name: '+ Nieve reciente', color: '#00FF00' },
-  { value: 9, label: 'GP', name: '⛇ Nieve granulada', color: '#00FF00' },
-  { value: 2, label: 'DF', name: '/ Partículas reconocibles', color: '#228B22' },
-  { value: 3, label: 'RG', name: '• Grano fino', color: '#FFC0CB' },
-  { value: 4, label: 'FC', name: '□ Granos Caras planas', color: '#ADD8E6' },
-  { value: 5, label: 'DH', name: '∧ Cubiletes', color: '#0000FF' },
+  { value: 2, label: 'PPgp', name: '⛇ Nieve granulada', color: '#00FF00' },
+  { value: 3, label: 'DF', name: '/ Partículas reconocibles', color: '#228B22' },
+  { value: 4, label: 'RG', name: '• Grano fino', color: '#FFC0CB' },
+  { value: 5, label: 'FC', name: '□ Granos Caras planas', color: '#ADD8E6' },
+  { value: 6, label: 'DH', name: '∧ Cubiletes', color: '#0000FF' },
   { value: 7, label: 'MF', name: '○ Grano redondo', color: '#FF0000' },
-  { value: 10, label: 'MFcr', name: '⚭ Costra de rehielo', color: '#BDBDBD' },
-  { value: 8, label: 'IF', name: '▮ Capa de hielo', color: '#00FFFF' },
-  { value: 6, label: 'SH', name: 'v Escarcha', color: '#FF00FF' },
+  { value: 8, label: 'MFcr', name: '⚭ Costra de rehielo', color: '#BDBDBD' },
+  { value: 9, label: 'IF', name: '▮ Capa de hielo', color: '#00FFFF' },
+  { value: 10, label: 'SH', name: 'v Escarcha', color: '#FF00FF' },
 ] as const;
 
 // Humidity values per AEMET standard
