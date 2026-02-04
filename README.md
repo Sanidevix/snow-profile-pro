@@ -22,7 +22,7 @@
 
 **SnowStrat Field** es una herramienta digital avanzada diseñada para profesionales de la nivología (guías, observadores y técnicos de rescate). La aplicación permite el registro sistemático de perfiles estratigráficos y tests de estabilidad en el terreno, cumpliendo con los estándares internacionales de la IACS y las directrices de la Guía de Observación Nivometeorológica (AEMET).
 
-## Funcionalidades Principales
+## ✨Funcionalidades Principales
 - **Registro de Estaciones:** Captura de datos de ubicación, altitud, orientación (0-9 según codificación estándar), inclinación de la ladera y parámetros meteorológicos básicos.
 - **Estratigrafía Detallada:**
     - Identificación de capas por profundidad.
@@ -32,14 +32,14 @@
 - **Tests de Estabilidad:** Plantillas específicas para Test de Compresión (CT), Test de Columna Extendida (ECT) y Test de Propagación de Sierra (PST), con registro de tipo de fractura y plano de deslizamiento.
 - **Visualización:** Generación en tiempo real del perfil de dureza y el gradiente térmico del manto.
 
-## Flujo de Trabajo Sugerido (Workflow)
+## 🧊 Flujo de Trabajo Sugerido (Workflow)
 1. **Configuración del Sitio:** Al llegar al punto de observación, registrar la pendiente y orientación antes de alterar el manto.
 2. **Perfil de Temperaturas:** Realizar las mediciones térmicas cada 10 cm inmediatamente después de abrir la calicata.
 3. **Análisis de Capas:** Definir las fases de dureza y clasificar los cristales según el estándar internacional.
 4. **Ejecución de Tests:** Realizar las pruebas de estabilidad (ECT/CT) para validar las capas críticas identificadas. (Pendiente incluir otros test como ECT)
 5. **Finalización:** Revisar el gráfico generado y exportar/guardar los datos antes de abandonar el punto.
 
-## ✨ Características técnicas
+## 📲 Características técnicas
 
 - **📴 Uso Offline**: Funciona completamente sin conexión a internet gracias a la tecnología PWA con Service Workers.
 - **📍 Geolocalización WGS84**: Captura automática de coordenadas GPS en formato estándar internacional.
@@ -291,14 +291,14 @@ Incluir advertencia clara de que la app no sustituye formación profesional ni c
 - **Stability Tests:** Specific templates for Compression Test (CT), Extended Column Test (ECT), including fracture type and shear plane recording. (ECT func. pending)
 - **Visualization:** Real-time generation of the hardness profile and the thermal gradient of the snowpack.
 
-## Suggested Workflow
+## 🧊 Suggested Workflow
 1. **Site Setup:** Upon arriving at the observation point, record the slope and aspect before disturbing the snowpack.
 2. **Temperature Profile:** Take thermal measurements every 10 cm immediately after opening the snow pit.
 3. **Layer Analysis:** Define hardness interfaces and classify crystals according to the international standard.
 4. **Test Execution:** Perform stability tests (ECT/CT) to validate the critical layers identified in the previous step.
 5. **Finalization:** Review the generated chart and export/save the data before leaving the site.
 
-## ✨ Technical Features
+## 📲 Technical Features
 - **📴 Offline Use**: Works completely without internet connection thanks to PWA technology with Service Workers.
 - **📍 WGS84 Geolocation**: Automatic GPS coordinate capture in international standard format.
 - **📊 IACS Graphic Visualization**: Visual representation of the stratigraphic profile with colors and symbols according to the International Classification for Seasonal Snow on the Ground (IACS 2009).
