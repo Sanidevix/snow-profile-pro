@@ -57,9 +57,26 @@ export async function getDB(): Promise<IDBPDatabase<NivoDBSchema>> {
 }
 
 // CRUD operations
-export async function saveProfile(profile: Omit<SnowProfile, 'id' | 'createdAt' | 'updatedAt'>): Promise<number> {
+export async function saveProfile(profile: Omit<SnowProfile, 'id' | 'createdAt' | 'updatedAt'>, existingId?: number): Promise<number> {
   const db = await getDB();
   const now = new Date().toISOString();
+  
+  if (existingId) {
+    // Update existing profile
+    const existing = await db.get('profiles', existingId);
+    if (existing) {
+      const updated: SnowProfile = {
+        ...existing,
+        ...profile,
+        id: existingId,
+        updatedAt: now,
+      };
+      await db.put('profiles', updated);
+      return existingId;
+    }
+  }
+  
+  // Create new profile
   const fullProfile: SnowProfile = {
     ...profile,
     createdAt: now,
