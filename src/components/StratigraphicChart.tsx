@@ -264,7 +264,7 @@ function CTDetailsDialog({ sample, onClose }: CTDetailsProps) {
 }
 
 export function StratigraphicChart({ samples, ctSamples = [], maxHeight }: StratigraphicChartProps) {
-  const [zoomIndex, setZoomIndex] = useState(2); // Start at 1x (index 2)
+  const [zoomIndex, setZoomIndex] = useState(1); // Start at 75% (index 1)
   const [selectedSample, setSelectedSample] = useState<ProcessedSample | null>(null);
   const [selectedCT, setSelectedCT] = useState<(CTSample & { index: number; yPosition: number; formattedResult: string }) | null>(null);
 
@@ -279,7 +279,7 @@ export function StratigraphicChart({ samples, ctSamples = [], maxHeight }: Strat
   }, []);
 
   const handleResetZoom = useCallback(() => {
-    setZoomIndex(2);
+    setZoomIndex(1); // Reset to 75%
   }, []);
 
   const chartData = useMemo(() => {
