@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useRef } from 'react';
-import { Download, Eye, RotateCcw, Save, ChevronLeft, Upload, MapPin, FolderOpen, BookOpen, Check } from 'lucide-react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { Eye, RotateCcw, ChevronLeft, Upload, MapPin, FolderOpen, BookOpen, Check } from 'lucide-react';
 import { ProfileHeader } from './ProfileHeader';
 import { SampleForm } from './SampleForm';
 import { StratigraphicChart } from './StratigraphicChart';
@@ -10,7 +10,7 @@ import { Documentation } from './Documentation';
 import { TestTypeSelector, TestType } from './TestTypeSelector';
 import { CTSampleForm } from './CTSampleForm';
 import { CTSampleTable } from './CTSampleTable';
-import { SnowSample, SnowProfile, saveProfile, downloadCSV, downloadGeoJSON, parseGeoJSON, GRAIN_TYPES } from '@/lib/db';
+import { SnowSample, SnowProfile, saveProfile, parseGeoJSON, GRAIN_TYPES } from '@/lib/db';
 import { CTSample, formatCTResult } from '@/lib/ctTypes';
 import { getISOTimestamp } from '@/hooks/useCurrentTime';
 import { toast } from '@/hooks/use-toast';
@@ -53,6 +53,30 @@ export function ProfileApp() {
   const [showFinishDialog, setShowFinishDialog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Auto-save effect when samples change
+  useEffect(() => {
+    const autoSave = async () => {
+      if ((samples.length > 0 || ctSamples.length > 0) && profileName && frozenData) {
+        try {
+          await saveProfile({
+            name: profileName,
+            observer,
+            observations,
+            latitude: frozenData.latitude,
+            longitude: frozenData.longitude,
+            altitude: frozenData.altitude,
+            timestamp: frozenData.timestamp ?? getISOTimestamp(new Date()),
+            samples,
+          });
+        } catch (error) {
+          // Silent fail for autosave
+          console.error('Autosave error:', error);
+        }
+      }
+    };
+    autoSave();
+  }, [samples, ctSamples, profileName, observer, observations, frozenData]);
+
   const handleStartProfile = useCallback(() => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -90,7 +114,10 @@ export function ProfileApp() {
       id: samples.length + 1,
       timestamp: getISOTimestamp(new Date()),
     };
-    setSamples(prev => [...prev, newSample]);
+    setSamples(prev => {
+      const updated = [...prev, newSample];
+      return updated;
+    });
     toast({
       title: `${t.samples.sampleRegistered} #${newSample.id}`,
       description: t.samples.layerAdded.replace('{height}', String(sample.height)),
@@ -103,7 +130,10 @@ export function ProfileApp() {
       id: ctSamples.length + 1,
       timestamp: getISOTimestamp(new Date()),
     };
-    setCTSamples(prev => [...prev, newSample]);
+    setCTSamples(prev => {
+      const updated = [...prev, newSample];
+      return updated;
+    });
     const ct = t.compressionTest;
     toast({
       title: `${ct?.sampleRegistered || 'Muestra CT registrada'} #${newSample.id}`,
@@ -194,11 +224,6 @@ export function ProfileApp() {
     }
   }, [buildProfile, t]);
 
-  const handleExportCSV = useCallback(() => {
-    const profile = buildProfile();
-    downloadCSV(profile);
-    toast({ title: t.results.csvExported, description: t.results.downloading });
-  }, [buildProfile, t]);
 
   const handleExportGeoJSON = useCallback(() => {
     const profile = buildProfile();
@@ -499,12 +524,10 @@ export function ProfileApp() {
             {ctSamples.length > 0 && (
               <CTSampleTable samples={ctSamples} />
             )}
-            <div className="grid gap-4 sm:grid-cols-3">
-              <button onClick={handleSaveProfile} className="nivo-btn-success"><Save className="w-5 h-5" />{t.results.save}</button>
-              <button onClick={handleExportCSV} className="nivo-btn-primary"><Download className="w-5 h-5" />{t.results.exportCSV}</button>
+            <div className="grid gap-4 grid-cols-2">
               <button onClick={handleExportGeoJSON} className="nivo-btn-primary"><MapPin className="w-5 h-5" />{t.results.exportGeoJSON}</button>
+              <button onClick={handleReset} className="nivo-btn-outline"><RotateCcw className="w-5 h-5" />{t.results.newProfile}</button>
             </div>
-            <button onClick={handleReset} className="nivo-btn-outline w-full"><RotateCcw className="w-5 h-5" />{t.results.newProfile}</button>
           </div>
         )}
       </main>
