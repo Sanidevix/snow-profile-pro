@@ -15,6 +15,7 @@ const TRAINING_RESOURCES = [
   { name: 'ACNA', url: 'https://acna.es' },
   { name: 'Lauegi Report', url: 'https://lauegi.report' },
   { name: 'Montaña Segura', url: 'https://montanasegura.com' },
+  { name: 'Aemet BPA', url: 'https://www.aemet.es/es/eltiempo/prediccion/montana/boletin_peligro_aludes'},
 ];
 
 export function Documentation({ open, onOpenChange }: DocumentationProps) {
