@@ -271,21 +271,58 @@ export function CTSampleForm({
           </select>
         </div>
 
-        {/* Diameter - Optional */}
+        {/* Diameter - Optional with stepper buttons */}
         <div>
           <label className="nivo-field-label flex items-center gap-2">
             <Circle className="w-4 h-4" />
             {ct?.grainDiameter || 'Diámetro del grano (mm)'}
           </label>
-          <input
-            type="number"
-            className="nivo-input"
-            value={diameter}
-            onChange={(e) => setDiameter(e.target.value)}
-            placeholder="Ej: 3"
-            min="0.1"
-            step="0.1"
-          />
+          <div className="flex items-stretch">
+            <button
+              type="button"
+              onClick={() => {
+                const current = diameter ? parseFloat(diameter) : 0.1;
+                if (current > 0.1) {
+                  setDiameter((current - 0.1).toFixed(1));
+                }
+              }}
+              disabled={!diameter || parseFloat(diameter) <= 0.1}
+              className="nivo-stepper-btn rounded-l-lg border-r-0 disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Decrementar diámetro"
+            >
+              <Minus className="w-5 h-5" />
+            </button>
+            <input
+              type="number"
+              className="nivo-input rounded-none border-x-0 text-center flex-1 min-w-0"
+              value={diameter}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === '') {
+                  setDiameter(value);
+                } else {
+                  const numValue = parseFloat(value);
+                  if (!isNaN(numValue) && numValue >= 0) {
+                    setDiameter(value);
+                  }
+                }
+              }}
+              placeholder="Ej: 3"
+              min="0.1"
+              step="0.1"
+            />
+            <button
+              type="button"
+              onClick={() => {
+                const current = diameter ? parseFloat(diameter) : 0;
+                setDiameter((current + 0.1).toFixed(1));
+              }}
+              className="nivo-stepper-btn rounded-r-lg border-l-0"
+              aria-label="Incrementar diámetro"
+            >
+              <Plus className="w-5 h-5" />
+            </button>
+          </div>
           <p className="text-xs text-muted-foreground mt-1">
             {ct?.grainDiameterHint || 'Tamaño medio del grano'}
           </p>
