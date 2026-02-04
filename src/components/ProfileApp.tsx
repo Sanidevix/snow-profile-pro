@@ -51,14 +51,15 @@ export function ProfileApp() {
   const [showDocumentation, setShowDocumentation] = useState(false);
   const [activeTab, setActiveTab] = useState<'stratigraphic' | 'compression'>('stratigraphic');
   const [showFinishDialog, setShowFinishDialog] = useState(false);
+  const [currentProfileId, setCurrentProfileId] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-save effect when samples change
+  // Auto-save effect when samples change - updates the same profile
   useEffect(() => {
     const autoSave = async () => {
       if ((samples.length > 0 || ctSamples.length > 0) && profileName && frozenData) {
         try {
-          await saveProfile({
+          const savedId = await saveProfile({
             name: profileName,
             observer,
             observations,
@@ -67,7 +68,12 @@ export function ProfileApp() {
             altitude: frozenData.altitude,
             timestamp: frozenData.timestamp ?? getISOTimestamp(new Date()),
             samples,
-          });
+          }, currentProfileId ?? undefined);
+          
+          // Store the profile ID for subsequent updates
+          if (!currentProfileId) {
+            setCurrentProfileId(savedId);
+          }
         } catch (error) {
           // Silent fail for autosave
           console.error('Autosave error:', error);
@@ -75,7 +81,7 @@ export function ProfileApp() {
       }
     };
     autoSave();
-  }, [samples, ctSamples, profileName, observer, observations, frozenData]);
+  }, [samples, ctSamples, profileName, observer, observations, frozenData, currentProfileId]);
 
   const handleStartProfile = useCallback(() => {
     navigator.geolocation.getCurrentPosition(
@@ -360,6 +366,7 @@ export function ProfileApp() {
     setFrozenData(null);
     setTestType('stratigraphic');
     setActiveTab('stratigraphic');
+    setCurrentProfileId(null); // Reset profile ID for new profile
   }, []);
 
   const totalHeight = samples.reduce((sum, s) => sum + s.height, 0);
