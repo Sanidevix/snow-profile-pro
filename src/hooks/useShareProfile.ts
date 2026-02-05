@@ -70,7 +70,22 @@ export function getFilename(profileName: string, timestamp: string): string {
   return `perfil_nivo_${profileName.replace(/\s+/g, '_')}_${new Date(timestamp).toISOString().split('T')[0]}.geojson`;
 }
 
-export async function shareProfile(profile: ShareableProfile, translations: { shareTitle?: string; shareError?: string; shareNotSupported?: string }): Promise<boolean> {
+export function downloadAsFile(profile: ShareableProfile): void {
+  const geojsonContent = buildGeoJSONContent(profile);
+  const filename = getFilename(profile.name, profile.timestamp);
+  
+  const blob = new Blob([geojsonContent], { type: 'application/geo+json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+export async function shareProfile(profile: ShareableProfile, translations: { shareTitle?: string; shareError?: string; shareNotSupported?: string; downloadFallback?: string }): Promise<boolean> {
   const geojsonContent = buildGeoJSONContent(profile);
   const filename = getFilename(profile.name, profile.timestamp);
   
@@ -89,14 +104,27 @@ export async function shareProfile(profile: ShareableProfile, translations: { sh
       }
     } catch (error) {
       // User cancelled or share failed
-      if ((error as Error).name !== 'AbortError') {
-        console.error('Share error:', error);
-        toast({
-          title: translations.shareError || 'Error al compartir',
-          description: (error as Error).message,
-          variant: 'destructive',
-        });
+      if ((error as Error).name === 'AbortError') {
+        return false;
       }
+      
+      // Permission denied (common in iframes/preview) - fallback to download
+      if ((error as Error).name === 'NotAllowedError') {
+        console.warn('Share permission denied, falling back to download');
+        downloadAsFile(profile);
+        toast({
+          title: translations.downloadFallback || 'Archivo descargado',
+          description: 'Compartir no disponible en este contexto. El archivo se ha descargado.',
+        });
+        return true;
+      }
+      
+      console.error('Share error:', error);
+      toast({
+        title: translations.shareError || 'Error al compartir',
+        description: (error as Error).message,
+        variant: 'destructive',
+      });
       return false;
     }
   }
@@ -110,20 +138,33 @@ export async function shareProfile(profile: ShareableProfile, translations: { sh
       });
       return true;
     } catch (error) {
-      if ((error as Error).name !== 'AbortError') {
-        console.error('Share error:', error);
+      if ((error as Error).name === 'AbortError') {
+        return false;
       }
+      
+      // Permission denied - fallback to download
+      if ((error as Error).name === 'NotAllowedError') {
+        console.warn('Share permission denied, falling back to download');
+        downloadAsFile(profile);
+        toast({
+          title: translations.downloadFallback || 'Archivo descargado',
+          description: 'Compartir no disponible en este contexto. El archivo se ha descargado.',
+        });
+        return true;
+      }
+      
+      console.error('Share error:', error);
       return false;
     }
   }
   
-  // No share API available
+  // No share API available - download directly
+  downloadAsFile(profile);
   toast({
-    title: translations.shareNotSupported || 'Compartir no disponible',
-    description: 'Tu navegador no soporta la función de compartir. Usa la exportación GeoJSON.',
-    variant: 'destructive',
+    title: translations.downloadFallback || 'Archivo descargado',
+    description: 'Tu navegador no soporta compartir. El archivo se ha descargado.',
   });
-  return false;
+  return true;
 }
 
 export function canShare(): boolean {
