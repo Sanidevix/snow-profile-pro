@@ -117,6 +117,11 @@ export const en: Translation = {
     newProfile: 'New Profile',
     profileFinished: 'Profile finished',
     samplesRegistered: '{count} samples registered',
+    share: 'Share',
+    shared: 'Profile shared',
+    sharedDescription: 'File has been shared successfully',
+    shareError: 'Error sharing',
+    shareNotSupported: 'Sharing not available',
   },
   table: {
     sample: 'Sample',

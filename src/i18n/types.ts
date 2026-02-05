@@ -139,6 +139,11 @@ export interface Translation {
     newProfile: string;
     profileFinished: string;
     samplesRegistered: string;
+    share: string;
+    shared: string;
+    sharedDescription: string;
+    shareError: string;
+    shareNotSupported: string;
   };
   
   // Table

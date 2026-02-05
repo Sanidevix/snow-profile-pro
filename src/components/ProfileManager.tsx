@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FolderOpen, Trash2, Eye, X, Calendar, Mountain, MapPin, Layers } from 'lucide-react';
+import { FolderOpen, Trash2, Eye, Calendar, Mountain, MapPin, Layers, Share2 } from 'lucide-react';
 import { SnowProfile, getAllProfiles, deleteProfile, formatDecimalCoords } from '@/lib/db';
 import {
   Dialog,
@@ -9,6 +9,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
+import { shareProfile, canShare } from '@/hooks/useShareProfile';
 
 interface ProfileManagerProps {
   open: boolean;
@@ -79,6 +80,16 @@ export function ProfileManager({ open, onOpenChange, onLoadProfile }: ProfileMan
       title: 'Perfil cargado',
       description: `"${profile.name}" listo para visualizar`,
     });
+  };
+
+  const handleShare = async (profile: SnowProfile) => {
+    const success = await shareProfile(profile, {});
+    if (success) {
+      toast({
+        title: 'Compartido',
+        description: `"${profile.name}" compartido correctamente`,
+      });
+    }
   };
 
   const formatDate = (dateStr: string): string => {
@@ -167,6 +178,15 @@ export function ProfileManager({ open, onOpenChange, onLoadProfile }: ProfileMan
                       >
                         <Eye className="w-4 h-4" />
                       </button>
+                      {canShare() && (
+                        <button
+                          onClick={() => handleShare(profile)}
+                          className="p-2 text-primary hover:bg-primary/10 rounded-md transition-colors"
+                          title="Compartir perfil"
+                        >
+                          <Share2 className="w-4 h-4" />
+                        </button>
+                      )}
                       <button
                         onClick={() => profile.id && handleDelete(profile.id, profile.name)}
                         disabled={deletingId === profile.id}
