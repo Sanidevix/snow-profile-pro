@@ -66,6 +66,11 @@ export const eu: Translation = {
     newProfile: 'Profil Berria',
     profileFinished: 'Profila amaituta',
     samplesRegistered: '{count} lagin erregistratuta',
+    share: 'Partekatu',
+    shared: 'Profila partekatua',
+    sharedDescription: 'Fitxategia ondo partekatu da',
+    shareError: 'Errorea partekatzean',
+    shareNotSupported: 'Partekatzea ez dago eskuragarri',
   },
   table: {
     sample: 'Lagina',

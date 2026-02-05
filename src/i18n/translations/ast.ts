@@ -66,6 +66,11 @@ export const ast: Translation = {
     newProfile: 'Nuevu Perfil',
     profileFinished: 'Perfil fináu',
     samplesRegistered: '{count} muestres rexistraes',
+    share: 'Compartir',
+    shared: 'Perfil compartíu',
+    sharedDescription: 'El ficheru compartióse correutamente',
+    shareError: 'Error al compartir',
+    shareNotSupported: 'Compartir nun ta disponible',
   },
   table: {
     sample: 'Muestra',

@@ -66,6 +66,11 @@ export const it: Translation = {
     newProfile: 'Nuovo Profilo',
     profileFinished: 'Profilo completato',
     samplesRegistered: '{count} campioni registrati',
+    share: 'Condividi',
+    shared: 'Profilo condiviso',
+    sharedDescription: 'Il file è stato condiviso con successo',
+    shareError: 'Errore di condivisione',
+    shareNotSupported: 'Condivisione non disponibile',
   },
   table: {
     sample: 'Campione',

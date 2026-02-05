@@ -117,6 +117,11 @@ export const es: Translation = {
     newProfile: 'Nuevo Perfil',
     profileFinished: 'Perfil finalizado',
     samplesRegistered: '{count} muestras registradas',
+    share: 'Compartir',
+    shared: 'Perfil compartido',
+    sharedDescription: 'El archivo se ha compartido correctamente',
+    shareError: 'Error al compartir',
+    shareNotSupported: 'Compartir no disponible',
   },
   table: {
     sample: 'Muestra',

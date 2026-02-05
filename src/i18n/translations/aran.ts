@@ -66,6 +66,11 @@ export const aran: Translation = {
     newProfile: 'Nòu Perfil',
     profileFinished: 'Perfil acabat',
     samplesRegistered: '{count} mòstres registrades',
+    share: 'Compartir',
+    shared: 'Perfil compartit',
+    sharedDescription: 'Eth archiu a estat compartit corrèctament',
+    shareError: 'Error en compartir',
+    shareNotSupported: 'Compartir non disponible',
   },
   table: {
     sample: 'Mòstra',

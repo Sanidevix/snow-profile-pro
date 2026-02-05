@@ -66,6 +66,11 @@ export const ca: Translation = {
     newProfile: 'Nou Perfil',
     profileFinished: 'Perfil finalitzat',
     samplesRegistered: '{count} mostres registrades',
+    share: 'Compartir',
+    shared: 'Perfil compartit',
+    sharedDescription: 'El fitxer s\'ha compartit correctament',
+    shareError: 'Error en compartir',
+    shareNotSupported: 'Compartir no disponible',
   },
   table: {
     sample: 'Mostra',

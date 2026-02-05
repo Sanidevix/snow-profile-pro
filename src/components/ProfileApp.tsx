@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { Eye, RotateCcw, ChevronLeft, Upload, MapPin, FolderOpen, BookOpen, Check } from 'lucide-react';
+import { Eye, RotateCcw, ChevronLeft, Upload, MapPin, FolderOpen, BookOpen, Check, Share2 } from 'lucide-react';
 import { ProfileHeader } from './ProfileHeader';
 import { SampleForm } from './SampleForm';
 import { StratigraphicChart } from './StratigraphicChart';
@@ -15,6 +15,7 @@ import { CTSample, formatCTResult } from '@/lib/ctTypes';
 import { getISOTimestamp } from '@/hooks/useCurrentTime';
 import { toast } from '@/hooks/use-toast';
 import { useI18n } from '@/i18n/context';
+import { shareProfile, canShare } from '@/hooks/useShareProfile';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   AlertDialog,
@@ -302,6 +303,22 @@ export function ProfileApp() {
     toast({ title: t.results.geojsonExported, description: t.results.downloading });
   }, [buildProfile, ctSamples, temperature, orientation, t]);
 
+  const handleShareProfile = useCallback(async () => {
+    const profile = buildProfile();
+    const shareableProfile = {
+      ...profile,
+      airTemperature: temperature ? parseFloat(temperature) : null,
+      slopeOrientation: orientation || null,
+    };
+    const success = await shareProfile(shareableProfile, {
+      shareError: t.results.shareError,
+      shareNotSupported: t.results.shareNotSupported,
+    });
+    if (success) {
+      toast({ title: t.results.shared, description: t.results.sharedDescription });
+    }
+  }, [buildProfile, temperature, orientation, t]);
+
   const handleImportGeoJSON = useCallback(() => {
     fileInputRef.current?.click();
   }, []);
@@ -531,8 +548,11 @@ export function ProfileApp() {
             {ctSamples.length > 0 && (
               <CTSampleTable samples={ctSamples} />
             )}
-            <div className="grid gap-4 grid-cols-2">
+            <div className="grid gap-4 grid-cols-3">
               <button onClick={handleExportGeoJSON} className="nivo-btn-primary"><MapPin className="w-5 h-5" />{t.results.exportGeoJSON}</button>
+              {canShare() && (
+                <button onClick={handleShareProfile} className="nivo-btn-primary"><Share2 className="w-5 h-5" />{t.results.share}</button>
+              )}
               <button onClick={handleReset} className="nivo-btn-outline"><RotateCcw className="w-5 h-5" />{t.results.newProfile}</button>
             </div>
           </div>

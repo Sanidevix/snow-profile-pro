@@ -66,6 +66,11 @@ export const gl: Translation = {
     newProfile: 'Novo Perfil',
     profileFinished: 'Perfil finalizado',
     samplesRegistered: '{count} mostras rexistradas',
+    share: 'Compartir',
+    shared: 'Perfil compartido',
+    sharedDescription: 'O ficheiro compartiuse correctamente',
+    shareError: 'Erro ao compartir',
+    shareNotSupported: 'Compartir non dispoñible',
   },
   table: {
     sample: 'Mostra',
