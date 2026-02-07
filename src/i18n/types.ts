@@ -144,6 +144,8 @@ export interface Translation {
     sharedDescription: string;
     shareError: string;
     shareNotSupported: string;
+    shareNotReady: string;
+    shareNotReadyDescription: string;
   };
   
   // Table

@@ -9,7 +9,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
-import { shareProfile, canShare } from '@/hooks/useShareProfile';
+import { buildShareFile, shareFile, canShare } from '@/hooks/useShareProfile';
 
 interface ProfileManagerProps {
   open: boolean;
@@ -83,7 +83,9 @@ export function ProfileManager({ open, onOpenChange, onLoadProfile }: ProfileMan
   };
 
   const handleShare = async (profile: SnowProfile) => {
-    const success = await shareProfile(profile, {});
+    // Pre-build the file synchronously, then share immediately
+    const file = buildShareFile(profile);
+    const success = await shareFile(file, profile.name, {});
     if (success) {
       toast({
         title: 'Compartido',

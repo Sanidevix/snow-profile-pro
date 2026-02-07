@@ -122,6 +122,8 @@ export const es: Translation = {
     sharedDescription: 'El archivo se ha compartido correctamente',
     shareError: 'Error al compartir',
     shareNotSupported: 'Compartir no disponible',
+    shareNotReady: 'Exporta primero',
+    shareNotReadyDescription: 'Debes exportar el GeoJSON antes de poder compartir.',
   },
   table: {
     sample: 'Muestra',

@@ -71,6 +71,8 @@ export const it: Translation = {
     sharedDescription: 'Il file è stato condiviso con successo',
     shareError: 'Errore di condivisione',
     shareNotSupported: 'Condivisione non disponibile',
+    shareNotReady: 'Esporta prima',
+    shareNotReadyDescription: 'Devi esportare il GeoJSON prima di condividere.',
   },
   table: {
     sample: 'Campione',

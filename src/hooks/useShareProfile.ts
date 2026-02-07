@@ -70,55 +70,56 @@ export function getFilename(profileName: string, timestamp: string): string {
   return `perfil_nivo_${profileName.replace(/\s+/g, '_')}_${new Date(timestamp).toISOString().split('T')[0]}.geojson`;
 }
 
-export function downloadAsFile(profile: ShareableProfile): void {
+/**
+ * Build a File object from a profile, ready for sharing.
+ * Uses application/json MIME for maximum mobile compatibility.
+ */
+export function buildShareFile(profile: ShareableProfile): File {
   const geojsonContent = buildGeoJSONContent(profile);
   const filename = getFilename(profile.name, profile.timestamp);
+  return new File([geojsonContent], filename, { type: 'application/json' });
+}
+
+/**
+ * Download the GeoJSON file locally AND return the File object for later sharing.
+ */
+export function exportAndPrepareFile(profile: ShareableProfile): File {
+  const file = buildShareFile(profile);
   
-  const blob = new Blob([geojsonContent], { type: 'application/geo+json' });
-  const url = URL.createObjectURL(blob);
+  const url = URL.createObjectURL(file);
   const link = document.createElement('a');
   link.href = url;
-  link.download = filename;
+  link.download = file.name;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
+  
+  return file;
 }
 
-export async function shareProfile(profile: ShareableProfile, translations: { shareTitle?: string; shareError?: string; shareNotSupported?: string; downloadFallback?: string }): Promise<boolean> {
-  const geojsonContent = buildGeoJSONContent(profile);
-  const filename = getFilename(profile.name, profile.timestamp);
-  
-  // Check if Web Share API with files is supported
-  if (navigator.canShare) {
+/**
+ * Share using a pre-generated File object.
+ * The file must be created beforehand so navigator.share is called
+ * immediately on user gesture without async computation.
+ */
+export async function shareFile(
+  file: File,
+  profileName: string,
+  translations: { shareError?: string; shareNotSupported?: string }
+): Promise<boolean> {
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
     try {
-      const file = new File([geojsonContent], filename, { type: 'application/geo+json' });
-      
-      if (navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          files: [file],
-          title: profile.name,
-          text: `Perfil estratigráfico: ${profile.name}`,
-        });
-        return true;
-      }
+      await navigator.share({
+        files: [file],
+        title: profileName,
+        text: `Perfil estratigráfico: ${profileName}`,
+      });
+      return true;
     } catch (error) {
-      // User cancelled or share failed
       if ((error as Error).name === 'AbortError') {
         return false;
       }
-      
-      // Permission denied (common in iframes/preview) - fallback to download
-      if ((error as Error).name === 'NotAllowedError') {
-        console.warn('Share permission denied, falling back to download');
-        downloadAsFile(profile);
-        toast({
-          title: translations.downloadFallback || 'Archivo descargado',
-          description: 'Compartir no disponible en este contexto. El archivo se ha descargado.',
-        });
-        return true;
-      }
-      
       console.error('Share error:', error);
       toast({
         title: translations.shareError || 'Error al compartir',
@@ -128,43 +129,30 @@ export async function shareProfile(profile: ShareableProfile, translations: { sh
       return false;
     }
   }
-  
-  // Fallback: try sharing just text/URL if file sharing not supported
+
+  // Fallback: share as text
   if (navigator.share) {
     try {
       await navigator.share({
-        title: profile.name,
-        text: `Perfil estratigráfico: ${profile.name}\n\n${geojsonContent.substring(0, 500)}...`,
+        title: profileName,
+        text: `Perfil estratigráfico: ${profileName}`,
       });
       return true;
     } catch (error) {
       if ((error as Error).name === 'AbortError') {
         return false;
       }
-      
-      // Permission denied - fallback to download
-      if ((error as Error).name === 'NotAllowedError') {
-        console.warn('Share permission denied, falling back to download');
-        downloadAsFile(profile);
-        toast({
-          title: translations.downloadFallback || 'Archivo descargado',
-          description: 'Compartir no disponible en este contexto. El archivo se ha descargado.',
-        });
-        return true;
-      }
-      
       console.error('Share error:', error);
       return false;
     }
   }
-  
-  // No share API available - download directly
-  downloadAsFile(profile);
+
   toast({
-    title: translations.downloadFallback || 'Archivo descargado',
-    description: 'Tu navegador no soporta compartir. El archivo se ha descargado.',
+    title: translations.shareNotSupported || 'Compartir no disponible',
+    description: 'Tu navegador no soporta la función de compartir.',
+    variant: 'destructive',
   });
-  return true;
+  return false;
 }
 
 export function canShare(): boolean {
