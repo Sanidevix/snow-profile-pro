@@ -71,6 +71,8 @@ export const ca: Translation = {
     sharedDescription: 'El fitxer s\'ha compartit correctament',
     shareError: 'Error en compartir',
     shareNotSupported: 'Compartir no disponible',
+    shareNotReady: 'Exporta primer',
+    shareNotReadyDescription: 'Has d\'exportar el GeoJSON abans de poder compartir.',
   },
   table: {
     sample: 'Mostra',

@@ -71,6 +71,8 @@ export const aran: Translation = {
     sharedDescription: 'Eth archiu a estat compartit corrèctament',
     shareError: 'Error en compartir',
     shareNotSupported: 'Compartir non disponible',
+    shareNotReady: 'Exporta prumèr',
+    shareNotReadyDescription: 'As d\'exportar eth GeoJSON abans de poder compartir.',
   },
   table: {
     sample: 'Mòstra',

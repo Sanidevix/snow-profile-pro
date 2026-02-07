@@ -71,6 +71,8 @@ export const eu: Translation = {
     sharedDescription: 'Fitxategia ondo partekatu da',
     shareError: 'Errorea partekatzean',
     shareNotSupported: 'Partekatzea ez dago eskuragarri',
+    shareNotReady: 'Lehenik esportatu',
+    shareNotReadyDescription: 'GeoJSON-a esportatu behar duzu partekatu aurretik.',
   },
   table: {
     sample: 'Lagina',

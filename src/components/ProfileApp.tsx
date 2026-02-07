@@ -15,7 +15,7 @@ import { CTSample, formatCTResult } from '@/lib/ctTypes';
 import { getISOTimestamp } from '@/hooks/useCurrentTime';
 import { toast } from '@/hooks/use-toast';
 import { useI18n } from '@/i18n/context';
-import { shareProfile, canShare } from '@/hooks/useShareProfile';
+import { exportAndPrepareFile, shareFile, canShare, buildShareFile } from '@/hooks/useShareProfile';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   AlertDialog,
@@ -53,6 +53,7 @@ export function ProfileApp() {
   const [activeTab, setActiveTab] = useState<'stratigraphic' | 'compression'>('stratigraphic');
   const [showFinishDialog, setShowFinishDialog] = useState(false);
   const [currentProfileId, setCurrentProfileId] = useState<number | null>(null);
+  const [preparedFile, setPreparedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Auto-save effect when samples change - updates the same profile
@@ -234,90 +235,37 @@ export function ProfileApp() {
 
   const handleExportGeoJSON = useCallback(() => {
     const profile = buildProfile();
-    // Extended GeoJSON export that includes CT samples
-    const feature = {
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: [
-          profile.longitude ?? 0, 
-          profile.latitude ?? 0, 
-          profile.altitude ?? 0
-        ]
-      },
-      properties: {
-        name: profile.name,
-        observer: profile.observer,
-        observations: profile.observations || '',
-        airTemperature: temperature ? parseFloat(temperature) : null,
-        slopeOrientation: orientation || null,
-        timestamp: profile.timestamp,
-        createdAt: profile.createdAt,
-        updatedAt: profile.updatedAt,
-        totalHeight: profile.samples.reduce((sum, s) => sum + s.height, 0),
-        sampleCount: profile.samples.length,
-        samples: profile.samples.map((sample, index) => ({
-          id: sample.id,
-          number: index + 1,
-          height: sample.height,
-          temperature: sample.temperature,
-          resistance: sample.resistance,
-          grainType: sample.grainType,
-          grainTypeLabel: GRAIN_TYPES.find(g => g.value === sample.grainType)?.label ?? null,
-          diameter: sample.diameter,
-          humidity: sample.humidity,
-          timestamp: sample.timestamp,
-        })),
-        ctSampleCount: ctSamples.length,
-        ctSamples: ctSamples.length > 0 ? ctSamples.map((sample, index) => ({
-          id: sample.id,
-          number: index + 1,
-          taps: sample.taps,
-          reference: sample.reference,
-          depth: sample.depth,
-          fractureQuality: sample.fractureQuality,
-          grainType: sample.grainType,
-          grainTypeLabel: getGrainLabel(sample.grainType),
-          diameter: sample.diameter,
-          additionalInfo: sample.additionalInfo,
-          formattedResult: formatCTResult(sample, getGrainLabel(sample.grainType)),
-          timestamp: sample.timestamp,
-        })) : undefined,
-      }
-    };
-
-    const geojson = JSON.stringify(feature, null, 2);
-    const blob = new Blob([geojson], { type: 'application/geo+json;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    
-    const filename = `perfil_nivo_${profile.name.replace(/\s+/g, '_')}_${new Date(profile.timestamp).toISOString().split('T')[0]}.geojson`;
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-
-    toast({ title: t.results.geojsonExported, description: t.results.downloading });
-  }, [buildProfile, ctSamples, temperature, orientation, t]);
-
-  const handleShareProfile = useCallback(async () => {
-    const profile = buildProfile();
     const shareableProfile = {
       ...profile,
       airTemperature: temperature ? parseFloat(temperature) : null,
       slopeOrientation: orientation || null,
     };
-    const success = await shareProfile(shareableProfile, {
+    
+    // Export downloads the file AND prepares it for sharing
+    const file = exportAndPrepareFile(shareableProfile);
+    setPreparedFile(file);
+
+    toast({ title: t.results.geojsonExported, description: t.results.downloading });
+  }, [buildProfile, temperature, orientation, t]);
+
+  const handleShareProfile = useCallback(async () => {
+    if (!preparedFile) {
+      toast({
+        title: t.results.shareNotReady || 'Exporta primero',
+        description: t.results.shareNotReadyDescription || 'Debes exportar el GeoJSON antes de poder compartir.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const success = await shareFile(preparedFile, profileName, {
       shareError: t.results.shareError,
       shareNotSupported: t.results.shareNotSupported,
     });
     if (success) {
       toast({ title: t.results.shared, description: t.results.sharedDescription });
     }
-  }, [buildProfile, temperature, orientation, t]);
+  }, [preparedFile, profileName, t]);
 
   const handleImportGeoJSON = useCallback(() => {
     fileInputRef.current?.click();
@@ -383,7 +331,8 @@ export function ProfileApp() {
     setFrozenData(null);
     setTestType('stratigraphic');
     setActiveTab('stratigraphic');
-    setCurrentProfileId(null); // Reset profile ID for new profile
+    setCurrentProfileId(null);
+    setPreparedFile(null);
   }, []);
 
   const totalHeight = samples.reduce((sum, s) => sum + s.height, 0);
@@ -551,7 +500,13 @@ export function ProfileApp() {
             <div className="grid gap-4 grid-cols-3">
               <button onClick={handleExportGeoJSON} className="nivo-btn-primary"><MapPin className="w-5 h-5" />{t.results.exportGeoJSON}</button>
               {canShare() && (
-                <button onClick={handleShareProfile} className="nivo-btn-primary"><Share2 className="w-5 h-5" />{t.results.share}</button>
+                <button 
+                  onClick={handleShareProfile} 
+                  className={`nivo-btn-primary ${!preparedFile ? 'opacity-50' : ''}`}
+                  disabled={!preparedFile}
+                >
+                  <Share2 className="w-5 h-5" />{t.results.share}
+                </button>
               )}
               <button onClick={handleReset} className="nivo-btn-outline"><RotateCcw className="w-5 h-5" />{t.results.newProfile}</button>
             </div>
