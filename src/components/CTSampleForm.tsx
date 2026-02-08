@@ -256,6 +256,9 @@ export function CTSampleForm({
             <Snowflake className="w-4 h-4" />
             {ct?.grainType || 'Tipo de Grano'} *
           </label>
+
+
+            {/*
           <select
             className="nivo-select"
             value={grainType ?? ''}
@@ -269,6 +272,23 @@ export function CTSampleForm({
               </option>
             ))}
           </select>
+            */}
+
+            <select
+                value={grainType || ''}
+                onChange={(e) => setGrainType(Number(e.target.value))}
+                className="nivo-select"
+              >
+                <option value="">{t.samples.grainTypeSelect}</option>
+                {GRAIN_TYPES.map((type) => (
+                  <option key={type.value} value={type.value}>
+                    {/* Aquí es donde ocurre la magia: t.samples.grainTypes[type.id] */}
+                    {t.grainTypes[type.value as keyof typeof t.grainTypes]}
+                  </option>
+                ))}
+              </select>
+
+
         </div>
 
         {/* Diameter - Optional with stepper buttons */}

@@ -252,7 +252,7 @@ export function SampleForm({
             <Snowflake className="w-4 h-4" />
             {t.samples.grainType} *
           </label>
-          <select
+          {/*<select
             className="nivo-select"
             value={grainType ?? ''}
             onChange={(e) => setGrainType(e.target.value ? parseInt(e.target.value) : null)}
@@ -264,7 +264,22 @@ export function SampleForm({
                 {g.name} ({g.label})
               </option>
             ))}
+          </select>*/}
+
+          <select
+            value={grainType || ''}
+            onChange={(e) => setGrainType(Number(e.target.value))}
+            className="nivo-select"
+          >
+            <option value="">{t.samples.grainTypeSelect}</option>
+            {GRAIN_TYPES.map((type) => (
+              <option key={type.value} value={type.value}>
+                {/* Aquí es donde ocurre la magia: t.samples.grainTypes[type.id] */}
+                {t.grainTypes[type.value as keyof typeof t.grainTypes]}
+              </option>
+            ))}
           </select>
+
         </div>
 
         {/* Diameter - Optional with stepper buttons */}

@@ -188,9 +188,21 @@ export const en: Translation = {
     close: 'Close',
   },
   footer: {
-    basedOn: 'SnowStrat Field - Based on AEMET Snow Observation Guide',
+    basedOn: 'SnowStrat Field - Snow stratigraphic profiles',
     pwaOffline: 'PWA Offline-First',
     localData: 'Data stored locally',
     documentation: 'Documentation',
+  },
+  grainTypes: {
+    1: '+ Fresh snow',
+    2: '⛇ Graupel',
+    3: '/ Decomposing and fragmented particles',
+    4: '• Small rounded grains',
+    5: '□ Faceted crystals',
+    6: '∧ Depth hoar',
+    7: '○ Rounded grains',
+    8: '⚭ Melt-freeze crust',
+    9: '▮ Ice layer',
+    10: 'v Surface hoar',
   },
 };

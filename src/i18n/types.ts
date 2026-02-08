@@ -240,6 +240,20 @@ export interface Translation {
     localData: string;
     documentation: string;
   };
+
+  // Grain Types
+  grainTypes: {
+    1: string;
+    2: string;
+    3: string;
+    4: string;
+    5: string;
+    6: string;
+    7: string;
+    8: string;
+    9: string;
+    10: string;
+  };
 }
 
 export interface LanguageInfo {
@@ -255,7 +269,7 @@ export const LANGUAGES: LanguageInfo[] = [
   { code: 'ast', name: 'Asturian', nativeName: 'Asturianu', flag: 'ES-AS' },
   { code: 'eu', name: 'Basque', nativeName: 'Euskara', flag: 'ES-PV' },
   { code: 'ca', name: 'Catalan', nativeName: 'Català', flag: 'ES-CT' },
-  { code: 'aran', name: 'Aranese', nativeName: 'Aranés', flag: 'ES-CT' },
+  { code: 'aran', name: 'Aranese', nativeName: 'Aranés', flag: 'ES-CT-VA' },
   { code: 'and', name: 'Andorran', nativeName: 'Català (Andorra)', flag: 'AD' },
   { code: 'en', name: 'English', nativeName: 'English', flag: 'GB' },
   { code: 'fr', name: 'French', nativeName: 'Français', flag: 'FR' },

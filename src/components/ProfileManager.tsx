@@ -180,6 +180,8 @@ export function ProfileManager({ open, onOpenChange, onLoadProfile }: ProfileMan
                       >
                         <Eye className="w-4 h-4" />
                       </button>
+
+                      {/* Only show share button if the Web Share API is supported and the profile can be shared 
                       {canShare() && (
                         <button
                           onClick={() => handleShare(profile)}
@@ -189,6 +191,8 @@ export function ProfileManager({ open, onOpenChange, onLoadProfile }: ProfileMan
                           <Share2 className="w-4 h-4" />
                         </button>
                       )}
+                      */}
+
                       <button
                         onClick={() => profile.id && handleDelete(profile.id, profile.name)}
                         disabled={deletingId === profile.id}
