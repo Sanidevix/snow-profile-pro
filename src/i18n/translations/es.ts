@@ -56,7 +56,7 @@ export const es: Translation = {
     sampleRegistered: 'Muestra registrada',
     layerAdded: 'Capa de {height}cm añadida',
     totalHeight: 'Altura total',
-    accumulatedHeight: 'Altura acumulada',
+    accumulatedHeight: 'Acumulado',
     confirmFinishTitle: '¿Finalizar perfil?',
     confirmFinishMessage: '¿Estás seguro de que deseas finalizar el perfil? Una vez finalizado, se generará el gráfico y el archivo de exportación.',
     cancel: 'Cancelar',
@@ -201,9 +201,21 @@ export const es: Translation = {
     close: 'Cerrar',
   },
   footer: {
-    basedOn: 'SnowStrat Field - Basado en Guía AEMET para la Observación Nivometeorológica',
+    basedOn: 'SnowStrat Field - Perfiles estratigráficos nivales',
     pwaOffline: 'PWA Offline-First',
     localData: 'Datos almacenados localmente',
     documentation: 'Documentación',
   },
+  grainTypes: {
+    1: '+ Nieve reciente',
+    2: '⛇ Nieve granulada',
+    3: '/ Partículas reconocibles',
+    4: '• Grano fino',
+    5: '□ Granos Caras planas',
+    6: '∧ Cubiletes',
+    7: '○ Grano redondo',
+    8: '⚭ Costra de rehielo',
+    9: '▮ Capa de hielo',
+    10: 'v Escarcha',
+  }
 };

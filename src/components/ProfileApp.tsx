@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { Eye, RotateCcw, ChevronLeft, Upload, MapPin, FolderOpen, BookOpen, Check, Share2 } from 'lucide-react';
+import { Eye, RotateCcw, ChevronLeft, Upload, MapPin, FolderOpen, BookOpen, Check, Share2, MountainSnow } from 'lucide-react';
 import { ProfileHeader } from './ProfileHeader';
 import { SampleForm } from './SampleForm';
 import { StratigraphicChart } from './StratigraphicChart';
@@ -497,9 +497,12 @@ export function ProfileApp() {
             {ctSamples.length > 0 && (
               <CTSampleTable samples={ctSamples} />
             )}
-            <div className="grid gap-4 grid-cols-3">
+
+            <div className="grid gap-4 grid-cols-2">
               <button onClick={handleExportGeoJSON} className="nivo-btn-primary"><MapPin className="w-5 h-5" />{t.results.exportGeoJSON}</button>
-              {canShare() && (
+              
+              {/* Dejarlo comentado hasta que se solventen los problemas de compatibilidad y permisos con el Web Share API
+                {canShare() && (
                 <button 
                   onClick={handleShareProfile} 
                   className={`nivo-btn-primary ${!preparedFile ? 'opacity-50' : ''}`}
@@ -508,8 +511,11 @@ export function ProfileApp() {
                   <Share2 className="w-5 h-5" />{t.results.share}
                 </button>
               )}
+              */}
+
               <button onClick={handleReset} className="nivo-btn-outline"><RotateCcw className="w-5 h-5" />{t.results.newProfile}</button>
             </div>
+            
           </div>
         )}
       </main>
@@ -518,10 +524,17 @@ export function ProfileApp() {
         <p>{t.footer.basedOn}</p>
         <div className="mt-1 flex items-center justify-center gap-2">
           <span>{t.footer.pwaOffline} • {t.footer.localData}</span>
+          
           <button onClick={() => setShowDocumentation(true)} className="text-primary hover:underline flex items-center gap-1">
             <BookOpen className="w-3 h-3" />
             {t.footer.documentation}
           </button>
+
+          {/*<button className="text-primary hover:underline flex items-center gap-1">
+            <MountainSnow className="w-3 h-3" />
+            {t.footer.documentation}
+          </button>*/}
+
         </div>
       </footer>
     </div>

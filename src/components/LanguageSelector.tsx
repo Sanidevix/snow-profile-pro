@@ -7,8 +7,36 @@ import { LANGUAGES, Language } from '@/i18n/types';
 // SVG flag components for each language/region
 const FLAGS: Record<string, React.ReactNode> = {
   'ES': <svg className="w-5 h-4" viewBox="0 0 640 480"><path fill="#c60b1e" d="M0 0h640v480H0z"/><path fill="#ffc400" d="M0 120h640v240H0z"/></svg>,
-  'ES-GA': <svg className="w-5 h-4" viewBox="0 0 640 480"><path fill="#fff" d="M0 0h640v480H0z"/><path fill="#0073cf" d="M0 0h320v240H0zm320 240h320v240H320z"/></svg>,
-  'ES-AS': <svg className="w-5 h-4" viewBox="0 0 640 480"><path fill="#0073cf" d="M0 0h640v480H0z"/><path fill="#fff200" d="M320 120l30 90-75-55h90l-75 55z"/></svg>,
+  'ES-GA': <svg className="w-5 h-4" viewBox="0 0 640 480">
+    {/* Fondo blanco */}
+    <rect width="640" height="480" fill="#fff" />
+    {/* Banda azul diagonal */}
+    <path 
+      fill="#0073cf" 
+      d="M0 0 L120 0 L640 380 L640 480 L520 480 L0 100 Z" 
+    />
+  </svg>,
+  'ES-AS': (
+    <svg className="w-5 h-4" viewBox="0 0 640 480">
+      {/* Fondo azul asturiano */}
+      <rect width="640" height="480" fill="#0066ff" />
+      
+      {/* Cruz de la Victoria (simplificada para visibilidad) */}
+      <g fill="#ffff00">
+        {/* Eje vertical */}
+        <path d="M305 80 h30 v320 h-30z" />
+        {/* Eje horizontal con extremos ensanchados */}
+        <path d="M160 180 h320 v35 l-20 25 h-280 l-20 -25z" />
+        
+        {/* Detalles de los extremos (brazos de la cruz) */}
+        <path d="M320 80 l-30 -20 h60 zM320 400 l-30 20 h60 z" />
+        
+        {/* Letras Alfa y Omega colgando */}
+        <path d="M210 245 l-15 35 h30 z" /> {/* Alfa (Triángulo) */}
+        <path d="M415 245 a15 15 0 1 0 30 0 v35 h-30 z" /> {/* Omega (U invertida) */}
+      </g>
+    </svg>
+  ),
   'ES-PV': <svg className="w-5 h-4" viewBox="0 0 640 480"><path fill="#d52b1e" d="M0 0h640v480H0z"/><path fill="#009b48" d="M0 160h640v160H0z"/><path fill="#fff" d="M280 0h80v480h-80zM0 200h640v80H0z"/></svg>,
   'ES-CT': <svg className="w-5 h-4" viewBox="0 0 640 480"><path fill="#fcdd09" d="M0 0h640v480H0z"/><path fill="#da121a" d="M0 53h640v53H0zm0 107h640v53H0zm0 106h640v54H0zm0 107h640v54H0z"/></svg>,
   'AD': <svg className="w-5 h-4" viewBox="0 0 640 480"><path fill="#0032a0" d="M0 0h213v480H0z"/><path fill="#fedf00" d="M213 0h214v480H213z"/><path fill="#d1203c" d="M427 0h213v480H427z"/></svg>,
@@ -16,6 +44,21 @@ const FLAGS: Record<string, React.ReactNode> = {
   'FR': <svg className="w-5 h-4" viewBox="0 0 640 480"><path fill="#002395" d="M0 0h213v480H0z"/><path fill="#fff" d="M213 0h214v480H213z"/><path fill="#ed2939" d="M427 0h213v480H427z"/></svg>,
   'DE': <svg className="w-5 h-4" viewBox="0 0 640 480"><path fill="#000" d="M0 0h640v160H0z"/><path fill="#d00" d="M0 160h640v160H0z"/><path fill="#ffce00" d="M0 320h640v160H0z"/></svg>,
   'IT': <svg className="w-5 h-4" viewBox="0 0 640 480"><path fill="#009246" d="M0 0h213v480H0z"/><path fill="#fff" d="M213 0h214v480H213z"/><path fill="#ce2b37" d="M427 0h213v480H427z"/></svg>,
+  'ES-CT-VA': (
+    <svg className="w-5 h-4" viewBox="0 0 640 480">
+      {/* Fondo Rojo */}
+      <rect width="640" height="480" fill="#da121a" />
+      
+      {/* Cruz Occitana simplificada (Dorada) */}
+      <path 
+        fill="#fcdd09" 
+        d="M320 80 L350 150 L420 150 L360 210 L390 280 L320 230 L250 280 L280 210 L220 150 L290 150 Z" 
+      />
+      
+      {/* Escudo central / Llave (Punto central blanco/azul) */}
+      <circle cx="320" cy="180" r="30" fill="#fff" stroke="#003399" strokeWidth="10" />
+    </svg>
+  ),
 };
 
 export function LanguageSelector() {
