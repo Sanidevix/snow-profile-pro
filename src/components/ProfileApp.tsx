@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { Eye, RotateCcw, ChevronLeft, Upload, MapPin, FolderOpen, BookOpen, Check, Share2, MountainSnow } from 'lucide-react';
+import { Eye, RotateCcw, ChevronLeft, Upload, MapPin, FolderOpen, BookOpen, Check, Share2, MountainSnow, FileText } from 'lucide-react';
 import { ProfileHeader } from './ProfileHeader';
 import { SampleForm } from './SampleForm';
 import { StratigraphicChart } from './StratigraphicChart';
@@ -7,6 +7,7 @@ import { SampleTable } from './SampleTable';
 import { ProfileManager } from './ProfileManager';
 import { LanguageSelector } from './LanguageSelector';
 import { Documentation } from './Documentation';
+import { UserManual } from './UserManual';
 import { TestTypeSelector, TestType } from './TestTypeSelector';
 import { CTSampleForm } from './CTSampleForm';
 import { CTSampleTable } from './CTSampleTable';
@@ -50,6 +51,7 @@ export function ProfileApp() {
   const [showChart, setShowChart] = useState(true);
   const [showProfileManager, setShowProfileManager] = useState(false);
   const [showDocumentation, setShowDocumentation] = useState(false);
+  const [showUserManual, setShowUserManual] = useState(false);
   const [activeTab, setActiveTab] = useState<'stratigraphic' | 'compression'>('stratigraphic');
   const [showFinishDialog, setShowFinishDialog] = useState(false);
   const [currentProfileId, setCurrentProfileId] = useState<number | null>(null);
@@ -343,6 +345,7 @@ export function ProfileApp() {
       <input ref={fileInputRef} type="file" accept=".geojson,application/geo+json,application/json" className="hidden" onChange={handleFileChange} />
       <ProfileManager open={showProfileManager} onOpenChange={setShowProfileManager} onLoadProfile={handleLoadProfile} />
       <Documentation open={showDocumentation} onOpenChange={setShowDocumentation} />
+      <UserManual open={showUserManual} onOpenChange={setShowUserManual} />
 
       <header className="bg-primary text-primary-foreground py-4 px-4 shadow-lg sticky top-0 z-40">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
@@ -525,16 +528,17 @@ export function ProfileApp() {
         <div className="mt-1 flex items-center justify-center gap-2">
           <span>{t.footer.pwaOffline} • {t.footer.localData}</span>
           
+          <button onClick={() => setShowUserManual(true)} className="text-primary hover:underline flex items-center gap-1">
+            <FileText className="w-3 h-3" />
+            {t.footer.userManual}
+          </button>
+
+          <span className="text-muted-foreground">•</span>
+
           <button onClick={() => setShowDocumentation(true)} className="text-primary hover:underline flex items-center gap-1">
             <BookOpen className="w-3 h-3" />
             {t.footer.documentation}
           </button>
-
-          {/*<button className="text-primary hover:underline flex items-center gap-1">
-            <MountainSnow className="w-3 h-3" />
-            {t.footer.documentation}
-          </button>*/}
-
         </div>
       </footer>
     </div>

@@ -192,6 +192,7 @@ export const en: Translation = {
     pwaOffline: 'PWA Offline-First',
     localData: 'Data stored locally',
     documentation: 'Documentation',
+    userManual: 'User Manual',
   },
   grainTypes: {
     1: '+ Fresh snow',

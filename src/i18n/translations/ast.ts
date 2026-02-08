@@ -181,6 +181,7 @@ export const ast: Translation = {
     pwaOffline: 'PWA Offline-First',
     localData: 'Datos almacenaos llocalmente',
     documentation: 'Documentación',
+    userManual: 'Manual de Usuario',
   },
   grainTypes: {
     1: '+ Ñeve recién',

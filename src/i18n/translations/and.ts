@@ -186,6 +186,7 @@ export const and: Translation = {
     pwaOffline: 'PWA Offline-First',
     localData: 'Dades emmagatzemades localment',
     documentation: 'Documentació',
+    userManual: 'Manual de Usuario',
   },
   grainTypes: {
     1: '+ Neu recent',
