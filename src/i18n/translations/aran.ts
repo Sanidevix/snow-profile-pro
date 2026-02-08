@@ -185,6 +185,7 @@ export const aran: Translation = {
     pwaOffline: 'PWA Offline-First',
     localData: 'Dades emagazinades locaument',
     documentation: 'Documentacion',
+    userManual: 'Manual de Usuario',
   },
   grainTypes: {
     1: '+ Nhèu recenta',

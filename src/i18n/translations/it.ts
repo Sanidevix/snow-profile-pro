@@ -185,6 +185,7 @@ export const it: Translation = {
     pwaOffline: 'PWA Offline-First',
     localData: 'Dati memorizzati localmente',
     documentation: 'Documentazione',
+    userManual: 'Manual de Usuario',
   },
   grainTypes: {
     1: '+ Neve fresca',

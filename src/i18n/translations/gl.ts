@@ -185,6 +185,7 @@ export const gl: Translation = {
     pwaOffline: 'PWA Offline-First',
     localData: 'Datos almacenados localmente',
     documentation: 'Documentación',
+    userManual: 'Manual de Usuario',
   },
   grainTypes: {
     1: '+ Neve recente',

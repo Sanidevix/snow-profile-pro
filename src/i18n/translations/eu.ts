@@ -185,6 +185,7 @@ export const eu: Translation = {
     pwaOffline: 'PWA Offline-First',
     localData: 'Datuak lokalean gordeta',
     documentation: 'Dokumentazioa',
+    userManual: 'Manual de Usuario',
   },
   grainTypes: {
     1: '+ Elur berria',
