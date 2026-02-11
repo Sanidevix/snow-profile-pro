@@ -180,6 +180,12 @@ export const gl: Translation = {
     trainingResources: 'Recursos de Formación',
     close: 'Pechar',
   },
+  contactModal: {
+    title: 'Contacto',
+    subtitle: 'Información de contacto e ligazóns do proxecto',
+    emailSection: 'Correo electrónico',
+    linksSection: 'Ligazóns do proxecto',
+  },
   footer: {
     basedOn: 'SnowStrat Field - Baseado en Guía AEMET para a Observación Nivometeorológica',
     pwaOffline: 'PWA Offline-First',

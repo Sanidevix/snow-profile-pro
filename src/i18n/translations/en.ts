@@ -187,6 +187,12 @@ export const en: Translation = {
     trainingResources: 'Training Resources',
     close: 'Close',
   },
+  contactModal: {
+    title: 'Contact',
+    subtitle: 'Contact information and project links',
+    emailSection: 'Email',
+    linksSection: 'Project links',
+  },
   footer: {
     basedOn: 'SnowStrat Field - Snow stratigraphic profiles',
     pwaOffline: 'PWA Offline-First',

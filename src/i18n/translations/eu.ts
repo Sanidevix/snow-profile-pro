@@ -180,6 +180,12 @@ export const eu: Translation = {
     trainingResources: 'Prestakuntza Baliabideak',
     close: 'Itxi',
   },
+  contactModal: {
+    title: 'Kontaktua',
+    subtitle: 'Kontaktu informazioa eta proiektuaren estekak',
+    emailSection: 'Posta elektronikoa',
+    linksSection: 'Proiektuaren estekak',
+  },
   footer: {
     basedOn: 'SnowStrat Field - Profil estratigrafiko nibalak',
     pwaOffline: 'PWA Offline-First',

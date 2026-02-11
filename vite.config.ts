@@ -25,7 +25,10 @@ export default defineConfig(({ mode }) => ({
           { src: '/pwa-512x512.png', sizes: '512x512', type: 'image/png' }
         ]
       },
-      workbox: { globPatterns: ['**/*.{js,css,html,ico,png,svg}'] }
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,svg}'],
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
+      }
     })
   ].filter(Boolean),
   resolve: {

@@ -181,6 +181,12 @@ export const and: Translation = {
     trainingResources: 'Recursos de Formació',
     close: 'Tancar',
   },
+  contactModal: {
+    title: 'Contacte',
+    subtitle: 'Informació de contacte i enllaços del projecte',
+    emailSection: 'Correu electrònic',
+    linksSection: 'Enllaços del projecte',
+  },
   footer: {
     basedOn: 'SnowStrat Field - Perfils estratigràfics de neu',
     pwaOffline: 'PWA Offline-First',

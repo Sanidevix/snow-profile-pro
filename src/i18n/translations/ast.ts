@@ -176,6 +176,12 @@ export const ast: Translation = {
     trainingResources: 'Recursos de Formación',
     close: 'Zarrar',
   },
+  contactModal: {
+    title: 'Contautu',
+    subtitle: 'Información de contautu y enllaces del proyectu',
+    emailSection: 'Corréu electrónicu',
+    linksSection: 'Enllaces del proyectu',
+  },
   footer: {
     basedOn: 'SnowStrat Field - Perfiles estratigráficos nivales',
     pwaOffline: 'PWA Offline-First',

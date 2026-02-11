@@ -465,6 +465,12 @@ export const es: Translation = {
       'Recursos de Formación: Enlaces a recursos externos de formación nivológica.',
     ],
   },
+  contactModal: {
+    title: 'Contacto',
+    subtitle: 'Información de contacto y enlaces del proyecto',
+    emailSection: 'Correo electrónico',
+    linksSection: 'Enlaces del proyecto',
+  },
   footer: {
     basedOn: 'SnowStrat Field - Perfiles estratigráficos nivales',
     pwaOffline: 'PWA Offline-First',
