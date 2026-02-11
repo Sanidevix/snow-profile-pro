@@ -543,10 +543,10 @@ export function ProfileApp() {
 
           <span className="text-muted-foreground">•</span>
 
-          <a href="mailto:sanidevix@gmail.com" className="text-primary hover:underline flex items-center gap-1">
+          <button onClick={() => window.location.href = 'mailto:sanidevix@gmail.com'} className="text-primary hover:underline flex items-center gap-1">
             <Mail className="w-3 h-3" />
             {t.footer.contact}
-          </a>
+          </button>
         </div>
 
       </footer>
