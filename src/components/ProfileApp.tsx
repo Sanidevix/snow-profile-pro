@@ -8,6 +8,7 @@ import { ProfileManager } from './ProfileManager';
 import { LanguageSelector } from './LanguageSelector';
 import { Documentation } from './Documentation';
 import { UserManual } from './UserManual';
+import { ContactModal } from './ContactModal';
 import { TestTypeSelector, TestType } from './TestTypeSelector';
 import { CTSampleForm } from './CTSampleForm';
 import { CTSampleTable } from './CTSampleTable';
@@ -52,6 +53,7 @@ export function ProfileApp() {
   const [showProfileManager, setShowProfileManager] = useState(false);
   const [showDocumentation, setShowDocumentation] = useState(false);
   const [showUserManual, setShowUserManual] = useState(false);
+  const [showContact, setShowContact] = useState(false);
   const [activeTab, setActiveTab] = useState<'stratigraphic' | 'compression'>('stratigraphic');
   const [showFinishDialog, setShowFinishDialog] = useState(false);
   const [currentProfileId, setCurrentProfileId] = useState<number | null>(null);
@@ -347,6 +349,7 @@ export function ProfileApp() {
       <ProfileManager open={showProfileManager} onOpenChange={setShowProfileManager} onLoadProfile={handleLoadProfile} />
       <Documentation open={showDocumentation} onOpenChange={setShowDocumentation} />
       <UserManual open={showUserManual} onOpenChange={setShowUserManual} />
+      <ContactModal open={showContact} onOpenChange={setShowContact} />
 
       <header className="bg-primary text-primary-foreground py-4 px-4 shadow-lg sticky top-0 z-40">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
@@ -543,7 +546,7 @@ export function ProfileApp() {
 
           <span className="text-muted-foreground">•</span>
 
-          <button onClick={() => window.location.href = 'mailto:sanidevix@gmail.com'} className="text-primary hover:underline flex items-center gap-1">
+          <button onClick={() => setShowContact(true)} className="text-primary hover:underline flex items-center gap-1">
             <Mail className="w-3 h-3" />
             {t.footer.contact}
           </button>
