@@ -147,6 +147,9 @@ export function UserManual({ open, onOpenChange }: UserManualProps) {
 
         {/* 4. Stratigraphic Profile Workflow */}
         <Section icon={Layers} title={`4. ${m.workflowStratigraphic}`}>
+
+          <img src="/guiatecnica_perfil.png" alt="SnowStrat Field - Guia técnica de perfil" className="w-800 h-600 rounded-lg" />
+
           {/* 4.1 Header Data */}
           <SubSection title={`4.1 ${m.headerData}`}>
             <div className="space-y-3">
@@ -244,6 +247,8 @@ export function UserManual({ open, onOpenChange }: UserManualProps) {
         {/* 5. CT Workflow */}
         <Section icon={TestTube2} title={`5. ${m.workflowCT}`}>
           <InfoCard>{m.ctDescription}</InfoCard>
+
+          <img src="/guiatecnica_testcompresion.png" alt="SnowStrat Field - Guia técnica Test de Compresión" className="w-800 h-600 rounded-lg" />
 
           <SubSection title={`5.1 ${m.ctSampleRegistration}`}>
             <BulletList items={[m.ctFieldTaps, m.ctFieldVerticalRef, m.ctFieldDepth, m.ctFieldFractureQuality, m.ctFieldGrain, m.ctFieldDiameter, m.ctFieldAdditionalInfo]} />
