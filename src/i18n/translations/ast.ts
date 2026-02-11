@@ -181,7 +181,9 @@ export const ast: Translation = {
     pwaOffline: 'PWA Offline-First',
     localData: 'Datos almacenaos llocalmente',
     documentation: 'Documentación',
-    userManual: 'Manual de Usuario',
+    userManual: 'Manual d\'Usuariu',
+    license: 'SnowStrat Field © 2026 - Iván de Vicente Sánchez - Usu non comercial permitíu. Tolos drechos comerciales reservaos baxo Llicencia Polyform Noncommercial.',
+    contact: 'Contautu',
   },
   grainTypes: {
     1: '+ Ñeve recién',

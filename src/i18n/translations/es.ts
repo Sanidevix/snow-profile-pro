@@ -472,6 +472,7 @@ export const es: Translation = {
     documentation: 'Documentación',
     userManual: 'Manual de Usuario',
     license: 'SnowStrat Field © 2026 - Iván de Vicente Sánchez - Uso no comercial permitido. Todos los derechos comerciales reservados bajo Licencia Polyform Noncommercial.',
+    contact: 'Contacto',
   },
   grainTypes: {
     1: '+ Nieve reciente',
