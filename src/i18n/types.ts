@@ -395,6 +395,7 @@ export interface Translation {
     localData: string;
     documentation: string;
     userManual: string;
+    license: string
   };
 
   // Grain Types

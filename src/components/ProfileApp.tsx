@@ -525,22 +525,23 @@ export function ProfileApp() {
       </main>
 
       <footer className="py-4 text-center text-xs text-muted-foreground border-t">
-        <p>{t.footer.basedOn}</p>
+        <p>{t.footer.license}</p>
         <div className="mt-1 flex items-center justify-center gap-2">
           <span>{t.footer.pwaOffline} • {t.footer.localData}</span>
           
           <button onClick={() => setShowUserManual(true)} className="text-primary hover:underline flex items-center gap-1">
-            <FileText className="w-3 h-3" />
+            <FileText className="w-3 h-1" />
             {t.footer.userManual}
           </button>
 
           <span className="text-muted-foreground">•</span>
 
           <button onClick={() => setShowDocumentation(true)} className="text-primary hover:underline flex items-center gap-1">
-            <BookOpen className="w-3 h-3" />
+            <BookOpen className="w-3 h-1" />
             {t.footer.documentation}
           </button>
         </div>
+
       </footer>
     </div>
   );
