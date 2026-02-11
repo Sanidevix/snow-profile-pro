@@ -392,6 +392,7 @@ export interface Translation {
   contactModal?: {
     title: string;
     subtitle: string;
+    aboutme: string;
     emailSection: string;
     linksSection: string;
   };

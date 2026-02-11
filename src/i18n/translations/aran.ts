@@ -143,7 +143,7 @@ export const aran: Translation = {
   },
   manager: {
     title: 'Perfils Guardats',
-    explore: 'Òòòarchiu',
+    explore: 'Archiu',
     import: 'Importar',
     noProfiles: 'Non i a perfils guardats',
     noProfilesDescription: 'Eths perfils que guardes apareisheràn ací',
@@ -181,8 +181,9 @@ export const aran: Translation = {
     close: 'Barrar',
   },
   contactModal: {
-    title: 'Contactòe',
-    subtitle: 'Informacion de contactòe e ligams dethòòò projècte',
+    title: 'Contactè',
+    aboutme: 'Sobre mi',
+    subtitle: 'Informacion de contactòe e ligams deth projècte',
     emailSection: 'Corrèu electronic',
     linksSection: 'Ligams deth projècte',
   },
@@ -191,9 +192,9 @@ export const aran: Translation = {
     pwaOffline: 'PWA Offline-First',
     localData: 'Dades emagazinades locaument',
     documentation: 'Documentacion',
-    userManual: 'Manuau d\'Usòòòari',
-    license: 'SnowStrat Field © 2026 - Iván de Vicente Sánchez - Us non comerciau permés. Toti es drets comerciaus reservats devath Licéncia Polyform Noncommercial.',
-    contact: 'Contactòòòe',
+    userManual: 'Manuau d\'Usuari',
+    license: 'SnowStrat Field © 2026 - Us non comerciau permés. Toti es drets comerciaus reservats devath Licéncia Polyform Noncommercial.',
+    contact: 'Contacte',
   },
   grainTypes: {
     1: '+ Nhèu recenta',

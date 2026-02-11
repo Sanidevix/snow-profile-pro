@@ -182,6 +182,7 @@ export const fr: Translation = {
   },
   contactModal: {
     title: 'Contact',
+    aboutme: 'Sobre mi',
     subtitle: 'Informations de contact et liens du projet',
     emailSection: 'Adresse e-mail',
     linksSection: 'Liens du projet',
@@ -192,7 +193,7 @@ export const fr: Translation = {
     localData: 'Données stockées localement',
     documentation: 'Documentation',
     userManual: 'Manuel Utilisateur',
-    license: 'SnowStrat Field © 2026 - Iván de Vicente Sánchez - Usage non commercial autorisé. Tous droits commerciaux réservés sous Licence Polyform Noncommercial.',
+    license: 'SnowStrat Field © 2026 - Usage non commercial autorisé. Tous droits commerciaux réservés sous Licence Polyform Noncommercial.',
     contact: 'Contact',
   },
   grainTypes: {
