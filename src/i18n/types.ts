@@ -388,6 +388,14 @@ export interface Translation {
     documentationContent: string[];
   };
 
+  // Contact Modal
+  contactModal?: {
+    title: string;
+    subtitle: string;
+    emailSection: string;
+    linksSection: string;
+  };
+
   // Footer
   footer: {
     basedOn: string;
