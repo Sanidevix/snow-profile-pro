@@ -135,6 +135,14 @@ npm run build
 - [Lauegi Report](https://lauegi.report) - Boletines de peligro de aludes del Pirineo
 - [Montaña Segura](https://montanasegura.com) - Prevención de accidentes en montaña
 
+## 🛡️ Licencia y Uso
+Este proyecto es un MVP protegido bajo la licencia **Polyform Noncommercial 1.0.0**.
+
+✅ Se permite: Uso personal, pruebas, aprendizaje y mejoras compartidas.
+❌ Se prohíbe: Uso comercial, venta del software o servicios basados en este código sin autorización.
+
+Para licencias comerciales o colaboraciones profesionales, escríbeme a: sanidevix@gmail.com
+
 ## 💖 Agradecimientos
 
 A **Luis, Álvaro y Alberto Pantoja**, por su incansable trabajo, sus enseñanzas y la motivación que transmiten a todos los que amamos la montaña y la nieve.
