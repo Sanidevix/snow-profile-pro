@@ -180,6 +180,12 @@ export const aran: Translation = {
     trainingResources: 'Ressòrces de Formacion',
     close: 'Barrar',
   },
+  contactModal: {
+    title: 'Contactòe',
+    subtitle: 'Informacion de contactòe e ligams dethòòò projècte',
+    emailSection: 'Corrèu electronic',
+    linksSection: 'Ligams deth projècte',
+  },
   footer: {
     basedOn: 'SnowStrat Field - Perfils estratigrafics nivaus',
     pwaOffline: 'PWA Offline-First',
