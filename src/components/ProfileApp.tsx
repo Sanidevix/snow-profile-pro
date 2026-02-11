@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { Eye, RotateCcw, ChevronLeft, Upload, MapPin, FolderOpen, BookOpen, Check, Share2, MountainSnow, FileText } from 'lucide-react';
+import { Eye, RotateCcw, ChevronLeft, Upload, MapPin, FolderOpen, BookOpen, Check, Share2, MountainSnow, FileText, Mail } from 'lucide-react';
 import { ProfileHeader } from './ProfileHeader';
 import { SampleForm } from './SampleForm';
 import { StratigraphicChart } from './StratigraphicChart';
@@ -530,16 +530,23 @@ export function ProfileApp() {
           <span>{t.footer.pwaOffline} • {t.footer.localData}</span>
           
           <button onClick={() => setShowUserManual(true)} className="text-primary hover:underline flex items-center gap-1">
-            <FileText className="w-3 h-1" />
+            <FileText className="w-3 h-3" />
             {t.footer.userManual}
           </button>
 
           <span className="text-muted-foreground">•</span>
 
           <button onClick={() => setShowDocumentation(true)} className="text-primary hover:underline flex items-center gap-1">
-            <BookOpen className="w-3 h-1" />
+            <BookOpen className="w-3 h-3" />
             {t.footer.documentation}
           </button>
+
+          <span className="text-muted-foreground">•</span>
+
+          <a href="mailto:sanidevix@gmail.com" className="text-primary hover:underline flex items-center gap-1">
+            <Mail className="w-3 h-3" />
+            {t.footer.contact}
+          </a>
         </div>
 
       </footer>

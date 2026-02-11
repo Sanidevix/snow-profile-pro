@@ -186,6 +186,8 @@ export const gl: Translation = {
     localData: 'Datos almacenados localmente',
     documentation: 'Documentación',
     userManual: 'Manual de Usuario',
+    license: 'SnowStrat Field © 2026 - Iván de Vicente Sánchez - Uso non comercial permitido. Todos os dereitos comerciais reservados baixo Licenza Polyform Noncommercial.',
+    contact: 'Contacto',
   },
   grainTypes: {
     1: '+ Neve recente',
