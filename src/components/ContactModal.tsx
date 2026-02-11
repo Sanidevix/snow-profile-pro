@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Mail, Github, ExternalLink } from 'lucide-react';
+import { Mail, Github, ExternalLink, User, Cable, Link, Linkedin } from 'lucide-react';
 import { useI18n } from '@/i18n/context';
 
 interface ContactModalProps {
@@ -14,7 +14,7 @@ const LINKS = [
     section: 'github',
     icon: Github,
     name: 'GitHub',
-    url: 'https://github.com/sanidevix/snowstrat-field',
+    url: 'https://github.com/Sanidevix/snow-profile-pro',
   },
 ];
 
@@ -35,6 +35,22 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
 
         <ScrollArea className="max-h-[50vh] pr-4">
           <div className="space-y-6">
+
+            {/* About me */}
+            <section>
+              <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
+                <User className="w-4 h-4 text-primary" />
+                {ct?.aboutme || 'Sobre mi'}
+              </h3>
+              <a
+                href=""
+                className="flex items-center gap-2 p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
+              >
+                <Linkedin className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium">Iván de Vicente Sánchez</span>
+              </a>
+            </section>
+
             {/* Email */}
             <section>
               <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
@@ -53,7 +69,7 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
             {/* Links */}
             <section>
               <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-                <Github className="w-4 h-4 text-primary" />
+                <Link className="w-4 h-4 text-primary" />
                 {ct?.linksSection || 'Enlaces del proyecto'}
               </h3>
               <div className="grid gap-2">

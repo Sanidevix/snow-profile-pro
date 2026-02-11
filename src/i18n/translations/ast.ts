@@ -178,6 +178,7 @@ export const ast: Translation = {
   },
   contactModal: {
     title: 'Contautu',
+    aboutme: 'Sobre mi',
     subtitle: 'Información de contautu y enllaces del proyectu',
     emailSection: 'Corréu electrónicu',
     linksSection: 'Enllaces del proyectu',
@@ -188,7 +189,7 @@ export const ast: Translation = {
     localData: 'Datos almacenaos llocalmente',
     documentation: 'Documentación',
     userManual: 'Manual d\'Usuariu',
-    license: 'SnowStrat Field © 2026 - Iván de Vicente Sánchez - Usu non comercial permitíu. Tolos drechos comerciales reservaos baxo Llicencia Polyform Noncommercial.',
+    license: 'SnowStrat Field © 2026 - Usu non comercial permitíu. Tolos drechos comerciales reservaos baxo Llicencia Polyform Noncommercial.',
     contact: 'Contautu',
   },
   grainTypes: {
